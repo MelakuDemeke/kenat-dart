@@ -1,9 +1,9 @@
 import 'package:test/test.dart';
 
-import '../lib/src/month_grid.dart';
-import '../lib/src/conversions.dart';
-import '../lib/src/constants.dart';
-import '../lib/src/utils.dart';
+import 'package:kenat/src/month_grid.dart';
+import 'package:kenat/src/conversions.dart';
+import 'package:kenat/src/constants.dart';
+import 'package:kenat/src/utils.dart';
 
 void main() {
   group('MonthGrid.create / createMonthGrid', () {
@@ -36,10 +36,11 @@ void main() {
       Map<String, dynamic> getMonthGridFromString(String s) {
         final m = RegExp(r'^(\d{4})\/(\d{1,2})\/(\d{1,2})$');
         final match = m.firstMatch(s);
-        if (match == null)
+        if (match == null) {
           throw FormatException(
             "Invalid Ethiopian date format. Use 'yyyy/mm/dd'",
           );
+        }
         final y = int.parse(match.group(1)!);
         final mo = int.parse(match.group(2)!);
         return createMonthGrid({'year': y, 'month': mo});
@@ -60,10 +61,11 @@ void main() {
       Map<String, dynamic> getMonthGridFromString(String s) {
         final m = RegExp(r'^(\d{4})\/(\d{1,2})\/(\d{1,2})$');
         final match = m.firstMatch(s);
-        if (match == null)
+        if (match == null) {
           throw FormatException(
             "Invalid Ethiopian date format. Use 'yyyy/mm/dd'",
           );
+        }
         final y = int.parse(match.group(1)!);
         final mo = int.parse(match.group(2)!);
         return createMonthGrid({'year': y, 'month': mo});

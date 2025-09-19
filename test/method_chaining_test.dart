@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 
-import '../lib/kenat.dart';
+import 'package:kenat/kenat.dart';
 
 void main() {
   group('Method Chaining Tests', () {

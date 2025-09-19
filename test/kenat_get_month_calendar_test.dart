@@ -1,7 +1,7 @@
 import 'package:test/test.dart';
 
-import '../lib/src/kenat.dart';
-import '../lib/src/formatting.dart';
+import 'package:kenat/src/kenat.dart';
+import 'package:kenat/src/formatting.dart';
 
 void main() {
   group('Kenat - getMonthCalendar', () {

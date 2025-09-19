@@ -1,5 +1,6 @@
 /// Main Ethiopian calendar class
 /// The core wrapper class that provides the main API for Ethiopian calendar operations
+library;
 
 import 'conversions.dart';
 import 'constants.dart';
@@ -284,7 +285,7 @@ class Kenat {
   /// for invalid unit or non-numeric amount.
   Kenat add(dynamic amount, String unit) {
     if (amount is! num) throw ArgumentError('Amount must be a number');
-    final intAmt = (amount as num).toInt();
+    final intAmt = (amount).toInt();
     switch (unit) {
       case 'days':
       case 'day':
@@ -303,7 +304,7 @@ class Kenat {
   /// Generic subtract for chaining
   Kenat subtract(dynamic amount, String unit) {
     if (amount is! num) throw ArgumentError('Amount must be a number');
-    final intAmt = (amount as num).toInt();
+    final intAmt = (amount).toInt();
     return add(-intAmt, unit);
   }
 

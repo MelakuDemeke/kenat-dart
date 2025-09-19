@@ -1,5 +1,6 @@
 /// Calendar grid generation for months
 /// Creates calendar grids with holidays, saints, and various display options
+library;
 
 import 'conversions.dart';
 import 'holidays.dart';
@@ -55,10 +56,12 @@ class MonthGrid {
         'If providing year or month, both must be provided.',
       );
     }
-    if (year != null)
+    if (year != null) {
       validateNumericInputs('MonthGrid.constructor', {'year': year});
-    if (month != null)
+    }
+    if (month != null) {
       validateNumericInputs('MonthGrid.constructor', {'month': month});
+    }
     if (weekStart != null) {
       validateNumericInputs('MonthGrid.constructor', {'weekStart': weekStart});
       if (weekStart < 0 || weekStart > 6) {

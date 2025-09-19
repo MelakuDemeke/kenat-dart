@@ -1,5 +1,6 @@
 /// Geez numeral conversion functions
 /// Converts Arabic numerals to Ethiopic (Geez) numerals and vice versa
+library;
 
 import 'errors/error_handler.dart';
 
@@ -56,8 +57,9 @@ class GeezConverter {
 
     final intValue = numValue.round();
 
-    if (intValue == 0)
+    if (intValue == 0) {
       return '0'; // Often Ge'ez doesn't have a zero, but useful for modern contexts.
+    }
 
     // Helper for numbers 1-99
     String convertBelow100(int n) {

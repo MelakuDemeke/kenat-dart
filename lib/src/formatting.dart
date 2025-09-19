@@ -1,5 +1,6 @@
 /// Date formatting functions in various styles
 /// Provides different formatting options for Ethiopian dates and times
+library;
 
 import 'geez_converter.dart';
 import 'constants.dart';

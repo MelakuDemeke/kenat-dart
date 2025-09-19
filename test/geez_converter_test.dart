@@ -1,7 +1,7 @@
 import 'package:test/test.dart';
 
-import '../lib/src/geez_converter.dart';
-import '../lib/src/errors/error_handler.dart';
+import 'package:kenat/src/geez_converter.dart';
+import 'package:kenat/src/errors/error_handler.dart';
 
 void main() {
   group('toGeez', () {

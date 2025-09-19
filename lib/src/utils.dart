@@ -1,5 +1,6 @@
 /// Utility functions for Ethiopian calendar operations
 /// Contains validation, leap year calculations, and other helper functions
+library;
 
 import 'conversions.dart';
 import 'errors/error_handler.dart';
@@ -49,9 +50,9 @@ class ValidationHelpers {
       );
     }
     validateNumericInputs(funcName, {
-      '${paramName}.year': dateObj['year'],
-      '${paramName}.month': dateObj['month'],
-      '${paramName}.day': dateObj['day'],
+      '$paramName.year': dateObj['year'],
+      '$paramName.month': dateObj['month'],
+      '$paramName.day': dateObj['day'],
     });
   }
 
@@ -81,14 +82,14 @@ class ValidationHelpers {
     if (timeObj['period'] != 'day' && timeObj['period'] != 'night') {
       throw InvalidInputTypeError(
         funcName,
-        '${paramName}.period',
+        '$paramName.period',
         "'day' or 'night'",
         timeObj['period'],
       );
     }
     validateNumericInputs(funcName, {
-      '${paramName}.hour': timeObj['hour'],
-      '${paramName}.minute': timeObj['minute'],
+      '$paramName.hour': timeObj['hour'],
+      '$paramName.minute': timeObj['minute'],
     });
   }
 }

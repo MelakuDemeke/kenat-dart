@@ -1,5 +1,6 @@
 /// Date conversion functions between Ethiopian and Gregorian calendars
 /// Also includes Islamic/Hijri calendar conversions
+library;
 
 import 'errors/error_handler.dart';
 import 'utils.dart';

@@ -1,8 +1,8 @@
 import 'package:test/test.dart';
 
-import '../lib/src/holidays.dart';
-import '../lib/src/bahire_hasab.dart';
-import '../lib/src/errors/error_handler.dart';
+import 'package:kenat/src/holidays.dart';
+import 'package:kenat/src/bahire_hasab.dart';
+import 'package:kenat/src/errors/error_handler.dart';
 
 void main() {
   group('Holiday Calculation', () {

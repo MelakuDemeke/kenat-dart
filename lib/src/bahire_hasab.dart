@@ -1,5 +1,6 @@
 /// Bahire Hasab calculations for Ethiopian calendar
 /// Handles movable feasts and calendar calculations
+library;
 
 import 'utils.dart';
 import 'day_arithmetic.dart';

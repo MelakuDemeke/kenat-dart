@@ -1,5 +1,6 @@
 /// Holiday calculations and saint commemorations
 /// Handles fixed and movable holidays, Islamic holidays, and saint days
+library;
 
 import 'conversions.dart';
 import 'constants.dart';

@@ -1,5 +1,6 @@
 /// Date arithmetic functions for Ethiopian calendar
 /// Handles adding/subtracting days, months, years and calculating differences
+library;
 
 import 'utils.dart';
 

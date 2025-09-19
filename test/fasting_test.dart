@@ -177,8 +177,9 @@ void main() {
           }
           if (d['year'] == pentecost['year'] &&
               d['month'] == pentecost['month'] &&
-              d['day'] == pentecost['day'])
+              d['day'] == pentecost['day']) {
             break;
+          }
           d = addDays(d, 1);
         }
       },

@@ -1,5 +1,6 @@
 /// Constants for the Ethiopian calendar library
 /// Contains month names, day names, holiday information, and other static data
+library;
 
 /// Month names in different languages
 class MonthNames {

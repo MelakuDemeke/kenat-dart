@@ -1,8 +1,8 @@
 import 'package:test/test.dart';
 
-import '../lib/src/time.dart';
-import '../lib/src/kenat.dart';
-import '../lib/src/errors/error_handler.dart';
+import 'package:kenat/src/time.dart';
+import 'package:kenat/src/kenat.dart';
+import 'package:kenat/src/errors/error_handler.dart';
 
 void main() {
   group('Time Class and Related Logic', () {

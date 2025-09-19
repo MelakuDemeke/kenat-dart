@@ -1,5 +1,6 @@
 /// Fasting period calculations
 /// Handles canonical fasting periods and weekly fasting days
+library;
 
 import 'bahire_hasab.dart';
 import 'holidays.dart';

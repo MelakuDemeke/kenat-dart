@@ -31,6 +31,7 @@
 ///   print(now.formatInGeez()); // "መስከረም ፲፩ ፳፻፲፮"
 /// }
 /// ```
+library;
 
 // Core classes
 export 'src/kenat.dart';

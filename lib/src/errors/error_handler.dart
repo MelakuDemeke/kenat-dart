@@ -1,4 +1,5 @@
 /// Custom error classes for the Ethiopian calendar library
+library;
 
 /// Base class for all custom errors in the Kenat library.
 class KenatError implements Exception {
@@ -87,7 +88,7 @@ class UnrecognizedInputError extends KenatError {
 
 /// Thrown for errors occurring during Ge'ez numeral conversion.
 class GeezConverterError extends KenatError {
-  GeezConverterError(String message) : super(message);
+  GeezConverterError(super.message);
 }
 
 /// Thrown when a function receives an argument of an incorrect type.
@@ -120,10 +121,10 @@ class InvalidInputTypeError extends KenatError {
 
 /// Thrown for errors related to invalid time components.
 class InvalidTimeError extends KenatError {
-  InvalidTimeError(String message) : super(message);
+  InvalidTimeError(super.message);
 }
 
 /// Thrown for invalid configuration options passed to MonthGrid.
 class InvalidGridConfigError extends KenatError {
-  InvalidGridConfigError(String message) : super(message);
+  InvalidGridConfigError(super.message);
 }

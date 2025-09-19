@@ -1,5 +1,6 @@
 /// Ethiopian time system class with day/night periods
 /// Handles 12-hour Ethiopian time format with day and night periods
+library;
 
 import 'geez_converter.dart';
 import 'constants.dart';

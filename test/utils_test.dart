@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 
-import '../lib/src/utils.dart';
+import 'package:kenat/src/utils.dart';
 
 void main() {
   group('dayOfYear', () {
