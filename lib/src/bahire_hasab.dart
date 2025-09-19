@@ -34,17 +34,15 @@ class BahireHasab {
     final base = _calculateBahireHasabBase(ethiopianYear);
 
     final evangelistRemainder = base['ameteAlem']! % 4;
-    final evangelistName =
-        EvangelistNames.amharic[evangelistRemainder] ??
-        EvangelistNames.english[evangelistRemainder] ??
-        'Unknown';
+    final evangelistName = lang == 'english'
+        ? (EvangelistNames.english[evangelistRemainder] ?? 'Unknown')
+        : (EvangelistNames.amharic[evangelistRemainder] ?? 'Unknown');
 
     final tinteQemer = (base['ameteAlem']! + base['meteneRabiet']!) % 7;
     final weekdayIndex = (tinteQemer + 1) % 7;
-    final newYearWeekday =
-        DaysOfWeek.amharic[weekdayIndex] ??
-        DaysOfWeek.english[weekdayIndex] ??
-        'Unknown';
+    final newYearWeekday = lang == 'english'
+        ? DaysOfWeek.english[weekdayIndex]
+        : DaysOfWeek.amharic[weekdayIndex];
 
     final movableFeasts = <String, Map<String, dynamic>>{};
 
@@ -117,7 +115,13 @@ class BahireHasab {
       'ethiopianYear': ethiopianYear,
     });
 
-    final tewsak = _movableHolidayTewsak[holidayKey];
+    // Convert holiday key to tewsak key
+    final tewsakKey = _keyToTewsakMap[holidayKey];
+    if (tewsakKey == null) {
+      throw UnknownHolidayError(holidayKey);
+    }
+
+    final tewsak = _movableHolidayTewsak[tewsakKey];
     if (tewsak == null) {
       throw UnknownHolidayError(holidayKey);
     }
@@ -152,7 +156,7 @@ class BahireHasab {
 
     final weekday = getWeekday(ethiopianYear, bealeMetqiMonth, bealeMetqiDay);
     final bealeMetqiWeekday = DaysOfWeek.english[weekday];
-    final tewsak = _tewsakMap[bealeMetqiWeekday!]!;
+    final tewsak = TewsakMap.english[bealeMetqiWeekday]!;
     final mebajaHamerSum = bealeMetqiDay + tewsak;
     final mebajaHamer = mebajaHamerSum > 30
         ? mebajaHamerSum % 30
@@ -182,44 +186,18 @@ class BahireHasab {
 
   /// Helper function to get holiday info from constants
   static Map<String, dynamic> _getHolidayInfo(String holidayKey) {
-    // This is a simplified mapping - in a full implementation, you'd have a comprehensive mapping
-    switch (holidayKey) {
-      case 'nineveh':
-        return {
-          'name': {'amharic': 'ጾመ ነነዌ', 'english': 'Fast of Nineveh'},
-          'description': {
-            'amharic': 'የነነዌ ሰዎች ንስሐ መግባታቸውን የሚያስታውስ የሦስት ቀን ጾም ነው።',
-            'english':
-                'A three-day fast commemorating the repentance of the people of Nineveh.',
-          },
-        };
-      case 'fasika':
-        return {
-          'name': {'amharic': 'ፋሲካ', 'english': 'Ethiopian Easter'},
-          'description': {
-            'amharic': 'የኢየሱስ ክርስቶስን ከሙታን መነሣት ያከብራል።',
-            'english': 'Celebrates the resurrection of Jesus Christ.',
-          },
-        };
-      default:
-        return {
-          'name': {'amharic': holidayKey, 'english': holidayKey},
-          'description': {'amharic': '', 'english': ''},
-        };
+    final holidayInfo = Holidays.getHolidayInfo(holidayKey);
+    if (holidayInfo != null) {
+      return holidayInfo;
     }
+
+    // Fallback for unknown holidays
+    return {
+      'name': {'amharic': holidayKey, 'english': holidayKey},
+      'description': {'amharic': '', 'english': ''},
+    };
   }
 }
-
-/// Tewsak mapping for movable holidays
-const Map<String, int> _tewsakMap = {
-  'Sunday': 7,
-  'Monday': 6,
-  'Tuesday': 5,
-  'Wednesday': 4,
-  'Thursday': 3,
-  'Friday': 2,
-  'Saturday': 8,
-};
 
 /// Key to tewsak mapping
 const Map<String, String> _keyToTewsakMap = {
@@ -238,17 +216,17 @@ const Map<String, String> _keyToTewsakMap = {
 
 /// Movable holiday tewsak values
 const Map<String, int> _movableHolidayTewsak = {
-  'NINEVEH': 0,
-  'ABIY_TSOME': 14,
-  'DEBRE_ZEIT': 41,
-  'HOSANNA': 62,
-  'SIKLET': 67,
-  'TINSAYE': 69,
-  'RIKBE_KAHNAT': 93,
-  'ERGET': 108,
-  'PARACLETE': 118,
-  'TSOME_HAWARYAT': 119,
-  'TSOME_DIHENET': 121,
+  'NINEVEH': MovableHolidayTewsak.nineveh,
+  'ABIY_TSOME': MovableHolidayTewsak.abiyTsome,
+  'DEBRE_ZEIT': MovableHolidayTewsak.debreZeit,
+  'HOSANNA': MovableHolidayTewsak.hosanna,
+  'SIKLET': MovableHolidayTewsak.siklet,
+  'TINSAYE': MovableHolidayTewsak.tinsaye,
+  'RIKBE_KAHNAT': MovableHolidayTewsak.rikbeKahnat,
+  'ERGET': MovableHolidayTewsak.erget,
+  'PARACLETE': MovableHolidayTewsak.paraclete,
+  'TSOME_HAWARYAT': MovableHolidayTewsak.tsomeHawaryat,
+  'TSOME_DIHENET': MovableHolidayTewsak.tsomeDihenet,
 };
 
 /// Convenience functions that match the original JavaScript API
