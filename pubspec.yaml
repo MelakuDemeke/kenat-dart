@@ -1,7 +1,9 @@
 name: kenat
-description: "Kenat"
-version: 0.0.1
-homepage:
+description: "A comprehensive Ethiopian calendar library for Dart/Flutter with full support for date conversions, holidays, fasting periods, and traditional calendar features"
+version: 1.0.0
+homepage: https://www.kenat.systems/
+repository: https://github.com/MelakuDemeke/kenat-dart
+issue_tracker: https://github.com/MelakuDemeke/kenat-dart/issues
 
 environment:
   sdk: ^3.9.2
