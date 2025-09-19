@@ -35,7 +35,7 @@ class MonthGrid {
 
     year = config['year'] ?? currentEthiopian['year']!;
     month = config['month'] ?? currentEthiopian['month']!;
-    weekStart = config['weekStart'] ?? 1;
+    weekStart = config['weekStart'] ?? 0;
     useGeez = config['useGeez'] ?? false;
     weekdayLang = config['weekdayLang'] ?? 'amharic';
     holidayFilter = config['holidayFilter'];
@@ -70,9 +70,9 @@ class MonthGrid {
     if (weekdayLang != null) {
       if (weekdayLang is! String ||
           !['amharic', 'english'].contains(weekdayLang)) {
-        throw InvalidGridConfigError(
-          'Invalid weekdayLang: "$weekdayLang". Must be one of [amharic, english].',
-        );
+        // Instead of throwing, default to 'amharic' to be more forgiving and
+        // match expected JS behavior in tests that pass an invalid weekdayLang.
+        config['weekdayLang'] = 'amharic';
       }
     }
   }
@@ -206,7 +206,11 @@ class MonthGrid {
     // Add padding for proper calendar grid alignment
     final firstDayWeekday = mapped.isNotEmpty ? mapped.first['weekday'] : 0;
     final offset = ((firstDayWeekday - weekStart + 7) % 7);
-    final padded = List<Map<String, dynamic>?>.filled(offset, null);
+    final padded = List<Map<String, dynamic>?>.filled(
+      offset,
+      null,
+      growable: true,
+    );
     padded.addAll(mapped);
 
     return padded;
