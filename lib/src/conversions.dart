@@ -184,13 +184,12 @@ class IslamicConversions {
   ///
   /// [date] - The Gregorian date
   /// Returns the approximate Hijri year
+  // Cache used by hijriToGregorian to avoid repeated scanning
+  static final Map<String, DateTime?> _hijriToGregorianCache = {};
+
   static int getHijriYear(DateTime date) {
-    // Simplified calculation: Hijri year ≈ Gregorian year - 622 + (Gregorian year - 622) / 33
-    // This is an approximation and may not be accurate for all dates
-    final gregorianYear = date.year;
-    final hijriYear =
-        (gregorianYear - 622) + ((gregorianYear - 622) / 33).round();
-    return hijriYear;
+    final islamic = _gregorianToIslamic(date);
+    return islamic['year']!;
   }
 
   /// Converts a Hijri date to the corresponding Gregorian date within a given Gregorian year.
@@ -211,48 +210,67 @@ class IslamicConversions {
     // Use a tabular Islamic (arithmetical) conversion to compute Julian Day then convert to Gregorian.
     // This is much more accurate than the previous stub and suitable for finding Hijri month ranges.
 
-    // Convert Hijri date to Julian Day (integer)
-    int _jdFromHijri(int y, int m, int d) {
-      final int iYear = y;
-      final int iMonth = m;
-      final int iDay = d;
-      final int jd =
-          (iDay +
-                  ((29.5 * (iMonth - 1)).ceil()) +
-                  (iYear - 1) * 354 +
-                  ((3 + 11 * iYear) / 30).floor() +
-                  1948440 -
-                  1)
-              .toInt();
-      return jd;
+    // Use a cache key like JS: `${hYear}-${hMonth}-${hDay}-${gregorianYear}`
+    final cacheKey = '$hYear-$hMonth-$hDay-$gregorianYear';
+    if (_hijriToGregorianCache.containsKey(cacheKey)) {
+      return _hijriToGregorianCache[cacheKey];
     }
 
-    // Convert Julian Day to Gregorian date (UTC)
-    DateTime _gregorianFromJd(int jd) {
-      // Based on algorithm from "Numerical Recipes" / Fliegel-Van Flandern
-      final int j = jd + 32044;
-      final int g = (4 * j + 3) ~/ 146097;
-      final int dg = j - (146097 * g) ~/ 4;
-      final int c = (4 * dg + 3) ~/ 1461;
-      final int dc = dg - (1461 * c) ~/ 4;
-      final int m = (5 * dc + 2) ~/ 153;
-      final int day = dc - (153 * m + 2) ~/ 5 + 1;
-      final int month = m + 3 - 12 * (m ~/ 10);
-      final int year = g * 100 + c - 4800 + (m ~/ 10);
-      return DateTime.utc(year, month, day);
-    }
-
-    try {
-      final jd = _jdFromHijri(hYear, hMonth, hDay);
-      final gDate = _gregorianFromJd(jd);
-      // Only return if the computed Gregorian year matches the requested year
-      if (gDate.year == gregorianYear) {
-        return gDate;
+    // Start from Jan 1 of gregorianYear - 1 and scan up to 730 days (2 years)
+    final start = DateTime.utc(gregorianYear - 1, 1, 1);
+    for (int offset = 0; offset <= 730; offset++) {
+      final test = start.add(Duration(days: offset));
+      final islamic = _gregorianToIslamic(test);
+      if (islamic['year'] == hYear &&
+          islamic['month'] == hMonth &&
+          islamic['day'] == hDay &&
+          test.year == gregorianYear) {
+        _hijriToGregorianCache[cacheKey] = test;
+        return test;
       }
-      return null;
-    } catch (e) {
-      return null;
     }
+
+    _hijriToGregorianCache[cacheKey] = null;
+    return null;
+  }
+
+  // Convert a Gregorian DateTime to Islamic date parts using arithmetic algorithm
+  // Returns {'year': y, 'month': m, 'day': d}
+  static Map<String, int> _gregorianToIslamic(DateTime date) {
+    // Convert Gregorian date to Julian Day number
+    int jd = _jdFromGregorian(date.year, date.month, date.day);
+
+    // Algorithm to convert JD to Islamic date
+    int l = jd - 1948440 + 10632;
+    int n = ((l - 1) / 10631).floor();
+    l = l - 10631 * n + 354;
+    int j =
+        ((10985 - l) / 5316).floor() * ((50 * l) / 17719).floor() +
+        (l / 5670).floor() * ((43 * l) / 15238).floor();
+    l =
+        l -
+        ((30 - j) / 15).floor() * ((17719 * j) / 50).floor() -
+        (j / 16).floor() * ((15238 * j) / 43).floor() +
+        29;
+    int m = (24 * l / 709).floor();
+    int d = l - (709 * m / 24).floor();
+    int y = 30 * n + j - 30;
+    return {'year': y, 'month': m, 'day': d};
+  }
+
+  static int _jdFromGregorian(int year, int month, int day) {
+    final a = ((14 - month) / 12).floor();
+    final y = year + 4800 - a;
+    final m = month + 12 * a - 3;
+    final jd =
+        day +
+        ((153 * m + 2) / 5).floor() +
+        365 * y +
+        (y / 4).floor() -
+        (y / 100).floor() +
+        (y / 400).floor() -
+        32045;
+    return jd;
   }
 
   /// Converts a Gregorian date to Hijri date

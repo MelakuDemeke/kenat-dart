@@ -8,6 +8,8 @@ import 'errors/error_handler.dart';
 import 'bahire_hasab.dart';
 
 /// Fixed holidays with their Ethiopian calendar dates
+// Reuse constants defined in constants.dart (holidayInfo, HolidayTags, etc.)
+// Keep a local fixedHolidays map for quick lookup consistent with JS implementation
 class FixedHolidays {
   static const Map<String, Map<String, dynamic>> holidays = {
     'enkutatash': {
@@ -101,7 +103,24 @@ class HolidayCalculator {
             gregorianDate.month,
             gregorianDate.day,
           );
+
+          // Check previous day only if needed: if the current mapping's
+          // Ethiopian year is not the target but the previous day's is,
+          // prefer the previous day. This avoids shifting occurrences like
+          // Moulid that are already correctly aligned.
+          final prev = DateTime(
+            gregorianDate.year,
+            gregorianDate.month,
+            gregorianDate.day,
+          ).subtract(const Duration(days: 1));
+          final prevEc = Conversions.toEC(prev.year, prev.month, prev.day);
+
           if (ecDate['year'] == ethiopianYear) {
+            // Current mapping already falls within the target Ethiopian year;
+            // prefer it. Only prefer the previous Gregorian day when the
+            // current mapping's Ethiopian year does NOT match the target but
+            // the previous day's mapping does. This mirrors the original JS
+            // library behavior.
             occurrences.add({
               'gregorian': {
                 'year': gregorianDate.year,
@@ -109,6 +128,15 @@ class HolidayCalculator {
                 'day': gregorianDate.day,
               },
               'ethiopian': ecDate,
+            });
+          } else if (prevEc['year'] == ethiopianYear) {
+            occurrences.add({
+              'gregorian': {
+                'year': prev.year,
+                'month': prev.month,
+                'day': prev.day,
+              },
+              'ethiopian': prevEc,
             });
           }
         }
@@ -239,10 +267,11 @@ class HolidayCalculator {
   /// Gets a specific holiday for a given year
   static Map<String, dynamic>? getHoliday(
     String holidayKey,
-    int ethYear, [
+    dynamic ethYear, [
     Map<String, dynamic>? options,
   ]) {
     validateNumericInputs('getHoliday', {'ethYear': ethYear});
+    final intYear = ethYear as int;
     options ??= {};
     final lang = options['lang'] ?? 'amharic';
 
@@ -264,7 +293,7 @@ class HolidayCalculator {
         'name': name,
         'description': description,
         'ethiopian': {
-          'year': ethYear,
+          'year': intYear,
           'month': rules['month'],
           'day': rules['day'],
         },
@@ -324,15 +353,20 @@ class HolidayCalculator {
 
   /// Gets all holidays in a specific month
   static List<Map<String, dynamic>> getHolidaysInMonth(
-    int ethYear,
-    int ethMonth, [
+    dynamic ethYear,
+    dynamic ethMonth, [
     Map<String, dynamic>? options,
   ]) {
+    // Validate types inside the function to match JS behavior
     validateNumericInputs('getHolidaysInMonth', {
       'ethYear': ethYear,
       'ethMonth': ethMonth,
     });
-    if (ethMonth < 1 || ethMonth > 13) {
+
+    final intYear = ethYear as int;
+    final intMonth = ethMonth as int;
+
+    if (intMonth < 1 || intMonth > 13) {
       throw InvalidInputTypeError(
         'getHolidaysInMonth',
         'ethMonth',
@@ -348,8 +382,8 @@ class HolidayCalculator {
     final allHolidayKeys = Holidays.allKeys;
 
     for (final key in allHolidayKeys) {
-      final holiday = getHoliday(key, ethYear, {'lang': lang});
-      if (holiday != null && holiday['ethiopian']['month'] == ethMonth) {
+      final holiday = getHoliday(key, intYear, {'lang': lang});
+      if (holiday != null && holiday['ethiopian']['month'] == intMonth) {
         allHolidaysForMonth.add(holiday);
       }
     }
@@ -367,7 +401,7 @@ class HolidayCalculator {
     );
 
     for (final data in muslimHolidays) {
-      if (data['ethiopian']['month'] == ethMonth) {
+      if (data['ethiopian']['month'] == intMonth) {
         final holidayInfo = Holidays.getHolidayInfo(data['key']);
         final holidayObj = {
           'key': data['key'],
@@ -501,7 +535,7 @@ const Map<String, String> _keyToTewsakMap = {
 /// Gets a specific holiday for a given year
 Map<String, dynamic>? getHoliday(
   String holidayKey,
-  int ethYear, [
+  dynamic ethYear, [
   Map<String, dynamic>? options,
 ]) {
   return HolidayCalculator.getHoliday(holidayKey, ethYear, options);
@@ -509,8 +543,8 @@ Map<String, dynamic>? getHoliday(
 
 /// Gets all holidays in a specific month
 List<Map<String, dynamic>> getHolidaysInMonth(
-  int ethYear,
-  int ethMonth, [
+  dynamic ethYear,
+  dynamic ethMonth, [
   Map<String, dynamic>? options,
 ]) {
   return HolidayCalculator.getHolidaysInMonth(ethYear, ethMonth, options);

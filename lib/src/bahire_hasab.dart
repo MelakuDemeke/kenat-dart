@@ -108,25 +108,42 @@ class BahireHasab {
   ///
   /// Returns an Ethiopian date object with year, month, day keys.
   static Map<String, int> getMovableHoliday(
-    String holidayKey,
-    int ethiopianYear,
+    dynamic holidayKey,
+    dynamic ethiopianYear,
   ) {
+    // Validate inside the function to mirror JS behavior
     validateNumericInputs('getMovableHoliday', {
       'ethiopianYear': ethiopianYear,
     });
 
-    // Convert holiday key to tewsak key
-    final tewsakKey = _keyToTewsakMap[holidayKey];
-    if (tewsakKey == null) {
-      throw UnknownHolidayError(holidayKey);
+    final intYear = ethiopianYear as int;
+
+    // Resolve tewsakKey: accept either the small-case holiday key (e.g. 'fasika')
+    // or the tewsak key used in _movableHolidayTewsak (e.g. 'TINSAYE').
+    final keyStr = holidayKey is String ? holidayKey : holidayKey.toString();
+    String? tewsakKey;
+    if (_keyToTewsakMap.containsKey(keyStr)) {
+      tewsakKey = _keyToTewsakMap[keyStr];
+    } else if (_movableHolidayTewsak.containsKey(keyStr)) {
+      tewsakKey = keyStr;
+    } else {
+      // Try to find a mapping where the value equals the provided key (case-sensitive)
+      try {
+        final entry = _keyToTewsakMap.entries.firstWhere(
+          (e) => e.value == keyStr,
+        );
+        tewsakKey = entry.value;
+      } catch (e) {
+        throw UnknownHolidayError(keyStr);
+      }
     }
 
     final tewsak = _movableHolidayTewsak[tewsakKey];
     if (tewsak == null) {
-      throw UnknownHolidayError(holidayKey);
+      throw UnknownHolidayError(keyStr);
     }
 
-    final base = _calculateBahireHasabBase(ethiopianYear);
+    final base = _calculateBahireHasabBase(intYear);
     final ninevehDate = base['ninevehDate'] as Map<String, int>;
 
     return addDays(ninevehDate, tewsak);
@@ -241,6 +258,6 @@ Map<String, dynamic> getBahireHasab(
 }
 
 /// Calculates the date of a movable holiday for a given year.
-Map<String, int> getMovableHoliday(String holidayKey, int ethiopianYear) {
+Map<String, int> getMovableHoliday(dynamic holidayKey, dynamic ethiopianYear) {
   return BahireHasab.getMovableHoliday(holidayKey, ethiopianYear);
 }
