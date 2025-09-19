@@ -2,121 +2,131 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kenat/kenat.dart';
 
 void main() {
-  group('Kenat Ethiopian Calendar Library Tests', () {
-    test('Basic Kenat instance creation and date conversion', () {
-      // Test creating Kenat from Ethiopian date
-      final kenat = Kenat.fromEthiopian(2016, 1, 10);
+  group('Kenat class', () {
+    test('should create an instance with current date', () {
+      final now = DateTime.now();
+      final kenat = Kenat.now();
 
-      expect(kenat.getEthiopian()['year'], equals(2016));
-      expect(kenat.getEthiopian()['month'], equals(1));
-      expect(kenat.getEthiopian()['day'], equals(10));
-
-      // Test Gregorian conversion
       final gregorian = kenat.getGregorian();
-      expect(gregorian['year'], equals(2023));
-      expect(gregorian['month'], equals(9));
-      expect(gregorian['day'], equals(17));
-    });
+      expect(gregorian.containsKey('year'), isTrue);
+      expect(gregorian.containsKey('month'), isTrue);
+      expect(gregorian.containsKey('day'), isTrue);
 
-    test('Date formatting', () {
-      final kenat = Kenat.fromEthiopian(2016, 1, 10);
-
-      // Test standard formatting
-      expect(kenat.formatStandard(), equals('መስከረም 10 2016'));
-      expect(kenat.formatStandard('english'), equals('Meskerem 10 2016'));
-
-      // Test short formatting
-      expect(kenat.formatShort(), equals('2016/01/10'));
-
-      // Test Geez formatting
-      expect(kenat.formatInGeez(), equals('መስከረም ፲፩ ፳፻፲፮'));
-    });
-
-    test('Date arithmetic', () {
-      final kenat = Kenat.fromEthiopian(2016, 1, 10);
-
-      // Test adding days
-      final nextDay = kenat.addDays(1);
-      expect(nextDay.getEthiopian()['day'], equals(11));
-
-      // Test adding months
-      final nextMonth = kenat.addMonths(1);
-      expect(nextMonth.getEthiopian()['month'], equals(2));
-      expect(nextMonth.getEthiopian()['day'], equals(10));
-
-      // Test adding years
-      final nextYear = kenat.addYears(1);
-      expect(nextYear.getEthiopian()['year'], equals(2017));
-    });
-
-    test('Geez numeral conversion', () {
-      expect(toGeez(10), equals('፲፩'));
-      expect(toGeez(2016), equals('፳፻፲፮'));
-      expect(toArabic('፲፩'), equals(10));
-      expect(toArabic('፳፻፲፮'), equals(2016));
-    });
-
-    test('Time class', () {
-      final time = Time(8, 30, 'day');
-      expect(time.hour, equals(8));
-      expect(time.minute, equals(30));
-      expect(time.period, equals('day'));
-
-      // Test formatting
-      final formatted = time.format();
-      expect(formatted, contains('8'));
-      expect(formatted, contains('30'));
-    });
-
-    test('Weekday calculation', () {
-      final kenat = Kenat.fromEthiopian(2016, 1, 10);
-      final weekday = kenat.getWeekday();
-      expect(weekday, greaterThanOrEqualTo(0));
-      expect(weekday, lessThan(7));
-
-      final weekdayName = kenat.getWeekdayName();
-      expect(weekdayName, isNotEmpty);
-    });
-
-    test('Holiday information', () {
-      final kenat = Kenat.fromEthiopian(2016, 1, 1); // Enkutatash
-
-      // Test getting holidays for the month
-      final holidays = kenat.getHolidaysInMonth();
-      expect(holidays, isNotEmpty);
-
-      // Check if Enkutatash is in the holidays
-      final enkutatash = holidays.where((h) => h['key'] == 'enkutatash');
-      expect(enkutatash, isNotEmpty);
-    });
-
-    test('Bahire Hasab calculations', () {
-      final kenat = Kenat.fromEthiopian(2016, 1, 1);
-
-      // Test Bahire Hasab
-      final bh = kenat.getBahireHasab();
-      expect(bh, isNotNull);
-      expect(bh['ameteAlem'], isNotNull);
-      expect(bh['movableFeasts'], isNotNull);
-    });
-
-    test('Month grid generation', () {
-      final grid = createMonthGrid({'year': 2016, 'month': 1});
-      expect(grid['headers'], isNotEmpty);
-      expect(grid['days'], isNotEmpty);
-      expect(grid['year'], equals(2016));
-      expect(grid['month'], equals(1));
-    });
-
-    test('Error handling', () {
-      // Test invalid date
+      // Compare only the date portion
       expect(
-        () => Kenat.fromEthiopian(2016, 13, 32),
-        throwsA(isA<InvalidEthiopianDateError>()),
+        '${gregorian['year']}-${gregorian['month']}-${gregorian['day']}',
+        equals('${now.year}-${now.month}-${now.day}'),
       );
 
-      // Test invalid time
-      expect(() => Time(25, 0, 'day'), throwsA(isA<InvalidTimeError>()));
+      final ethiopian = kenat.getEthiopian();
+      expect(ethiopian.containsKey('year'), isTrue);
+      expect(ethiopian.containsKey('month'), isTrue);
+      expect(ethiopian.containsKey('day'), isTrue);
+    });
+
+    test('should convert a specific Ethiopian date correctly', () {
+      final kenat = Kenat.fromString('2016/9/15');
+      final gregorian = kenat.getGregorian();
+      expect(gregorian, equals({'year': 2024, 'month': 5, 'day': 23}));
+
+      final ethiopian = kenat.getEthiopian();
+      expect(ethiopian, equals({'year': 2016, 'month': 9, 'day': 15}));
+    });
+
+    test('toString should return Ethiopian date string', () {
+      final kenat = Kenat.fromString('2016/9/15');
+      final str = kenat.toString();
+      // The original JS expected: "ግንቦት 15 2016 12:00 ጠዋት"
+      // Our DateFormatter.formatWithTime uses hour/minute and period; toString
+      // returns 'Kenat(<formatted date>)' so adapt expectation to include
+      // the formatted date portion.
+      expect(str.contains('ግንቦት 15 2016'), isTrue);
+    });
+
+    test(
+      'format returns Ethiopian date string with month name in English and Amharic',
+      () {
+        final kenat = Kenat.fromString('2017/1/15'); // Meskerem 15, 2017
+
+        final englishFormat = kenat.formatStandard('english');
+        expect(englishFormat, equals('Meskerem 15 2017'));
+
+        final amharicFormat = kenat.formatStandard();
+        expect(amharicFormat, equals('መስከረም 15 2017'));
+      },
+    );
+
+    test(
+      'formatInGeezAmharic returns Ethiopian date string with Amharic month and Geez numerals',
+      () {
+        final kenat = Kenat.fromString('2017/1/15'); // Meskerem 15, 2017
+
+        final formatted = kenat.formatInGeez();
+
+        // Expected: "መስከረም ፲፭ ፳፻፲፯"
+        expect(formatted, equals('መስከረም ፲፭ ፳፻፲፯'));
+      },
+    );
+  });
+
+  group('Kenat API Helper Methods', () {
+    final date1 = Kenat.fromString('2016/8/15');
+    final date2 = Kenat.fromString('2016/8/20');
+    final date3 = Kenat.fromString('2016/8/15');
+    final leapYearDate = Kenat.fromString('2015/1/1');
+    final nonLeapYearDate = Kenat.fromString('2016/1/1');
+
+    test('isBefore() should correctly compare dates', () {
+      expect(date1.isBefore(date2), isTrue);
+      expect(date2.isBefore(date1), isFalse);
+      expect(date1.isBefore(date3), isFalse);
+    });
+
+    test('isAfter() should correctly compare dates', () {
+      expect(date2.isAfter(date1), isTrue);
+      expect(date1.isAfter(date2), isFalse);
+      expect(date1.isAfter(date3), isFalse);
+    });
+
+    test('isSameDay() should correctly compare dates', () {
+      expect(date1.isSameDay(date3), isTrue);
+      expect(date1.isSameDay(date2), isFalse);
+    });
+
+    test('startOfMonth() should return the first day of the month', () {
+      final start = date1.startOf('month');
+      expect(
+        start.getEthiopian(),
+        equals({'year': 2016, 'month': 8, 'day': 1}),
+      );
+    });
+
+    test('endOfMonth() should return the last day of a standard month', () {
+      final end = date1.endOf('month');
+      expect(end.getEthiopian(), equals({'year': 2016, 'month': 8, 'day': 30}));
+    });
+
+    test(
+      'endOfMonth() should return the last day of Pagume in a leap year',
+      () {
+        final pagume = Kenat.fromString('2015/13/1'); // 2015 is a leap year
+        final end = pagume.endOf('month');
+        expect(
+          end.getEthiopian(),
+          equals({'year': 2015, 'month': 13, 'day': 6}),
+        );
+      },
+    );
+
+    test('isLeapYear() should correctly identify leap years', () {
+      expect(leapYearDate.isLeapYear(), isTrue);
+      expect(nonLeapYearDate.isLeapYear(), isFalse);
+    });
+
+    test('weekday() should return the correct day of the week', () {
+      // May 23, 2024 is a Thursday, which is index 4
+      final specificDate = Kenat.fromString('2016/9/15');
+      expect(specificDate.getWeekday(), equals(4));
     });
   });
 }

@@ -165,6 +165,52 @@ class Kenat {
         : DaysOfWeek.amharic[weekday];
   }
 
+  // --- Compatibility helpers to match the JS Kenat API used by tests ---
+
+  /// Returns true if this date is before [other]
+  bool isBefore(Kenat other) {
+    return DayArithmetic.diffInDays(_ethiopian, other._ethiopian) < 0;
+  }
+
+  /// Returns true if this date is after [other]
+  bool isAfter(Kenat other) {
+    return DayArithmetic.diffInDays(_ethiopian, other._ethiopian) > 0;
+  }
+
+  /// Returns true if this date falls on the same Ethiopian day as [other]
+  bool isSameDay(Kenat other) {
+    return _ethiopian['year'] == other._ethiopian['year'] &&
+        _ethiopian['month'] == other._ethiopian['month'] &&
+        _ethiopian['day'] == other._ethiopian['day'];
+  }
+
+  /// Convenience alias matching JS API: startOfMonth()
+  Kenat startOfMonth() {
+    return startOf('month');
+  }
+
+  /// Convenience alias matching JS API: endOfMonth()
+  Kenat endOfMonth() {
+    final lastDay = EthiopianCalendarUtils.getEthiopianDaysInMonth(
+      _ethiopian['year']!,
+      _ethiopian['month']!,
+    );
+    return Kenat({
+      'year': _ethiopian['year'],
+      'month': _ethiopian['month'],
+      'day': lastDay,
+    }, _time);
+  }
+
+  /// Compatibility: weekday() -> returns numeric weekday (0-6)
+  int weekday() => getWeekday();
+
+  /// Compatibility: format({ lang: 'english' })
+  String format({String lang = 'amharic'}) => formatStandard(lang);
+
+  /// Compatibility: formatInGeezAmharic()
+  String formatInGeezAmharic() => formatInGeez();
+
   /// Checks if this is a leap year
   bool isLeapYear() {
     return LeapYearUtils.isEthiopianLeapYear(_ethiopian['year']!);
@@ -307,6 +353,16 @@ class Kenat {
           'month': _ethiopian['month'],
           'day': _ethiopian['day'],
         }, endTime);
+      case 'month':
+        final lastDay = EthiopianCalendarUtils.getEthiopianDaysInMonth(
+          _ethiopian['year']!,
+          _ethiopian['month']!,
+        );
+        return Kenat({
+          'year': _ethiopian['year'],
+          'month': _ethiopian['month'],
+          'day': lastDay,
+        }, _time);
       default:
         throw ArgumentError('Invalid unit: $unit');
     }
