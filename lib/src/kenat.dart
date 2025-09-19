@@ -110,9 +110,36 @@ class Kenat {
     return _time;
   }
 
+  /// Public accessor for time to support chaining-style API (`.time`).
+  Time? get time => _time;
+
   /// Sets the time
-  void setTime(Time time) {
-    _time = time;
+  /// Sets the time on this instance (mutable). Also supports a chaining
+  /// friendly form when called with primitives: `setTime(hour, minute, period)`
+  ///
+  /// Behavior:
+  /// - If called with a `Time` instance, mutates this instance and returns void.
+  /// - If called with primitives, returns a new `Kenat` with the updated time
+  ///   (immutable/chaining-friendly).
+  dynamic setTime(dynamic a, [int? minute, String? period]) {
+    if (a is Time) {
+      _time = a;
+      return null;
+    }
+
+    if (a is int) {
+      final h = a;
+      final m = minute ?? 0;
+      final p = period ?? 'day';
+      final newTime = Time(h, m, p);
+      return Kenat({
+        'year': _ethiopian['year'],
+        'month': _ethiopian['month'],
+        'day': _ethiopian['day'],
+      }, newTime);
+    }
+
+    throw UnrecognizedInputError(a);
   }
 
   /// Gets the weekday (0-6, Sunday = 0)
@@ -200,6 +227,34 @@ class Kenat {
     return Kenat(newDate, _time);
   }
 
+  /// Generic add that supports chaining: `add(amount, unit)` where unit is
+  /// 'days'|'day'|'months'|'month'|'years'|'year'. Throws [ArgumentError]
+  /// for invalid unit or non-numeric amount.
+  Kenat add(dynamic amount, String unit) {
+    if (amount is! num) throw ArgumentError('Amount must be a number');
+    final intAmt = (amount as num).toInt();
+    switch (unit) {
+      case 'days':
+      case 'day':
+        return addDays(intAmt);
+      case 'months':
+      case 'month':
+        return addMonths(intAmt);
+      case 'years':
+      case 'year':
+        return addYears(intAmt);
+      default:
+        throw ArgumentError('Invalid unit: $unit');
+    }
+  }
+
+  /// Generic subtract for chaining
+  Kenat subtract(dynamic amount, String unit) {
+    if (amount is! num) throw ArgumentError('Amount must be a number');
+    final intAmt = (amount as num).toInt();
+    return add(-intAmt, unit);
+  }
+
   /// Adds months to the current date
   Kenat addMonths(int months) {
     final newDate = DayArithmetic.addMonths(_ethiopian, months);
@@ -210,6 +265,58 @@ class Kenat {
   Kenat addYears(int years) {
     final newDate = DayArithmetic.addYears(_ethiopian, years);
     return Kenat(newDate, _time);
+  }
+
+  /// startOf(unit) supports 'month' and 'day' and returns a new Kenat.
+  Kenat startOf(String unit) {
+    switch (unit) {
+      case 'month':
+        final newDate = {
+          'year': _ethiopian['year'],
+          'month': _ethiopian['month'],
+          'day': 1,
+        };
+        return Kenat(newDate, _time);
+      case 'day':
+        // Start of day -> set time to start (1:00 day)
+        final startTime = Time(1, 0, 'day');
+        return Kenat({
+          'year': _ethiopian['year'],
+          'month': _ethiopian['month'],
+          'day': _ethiopian['day'],
+        }, startTime);
+      default:
+        throw ArgumentError('Invalid unit: $unit');
+    }
+  }
+
+  /// endOf(unit) supports 'day' and returns a new Kenat with time set to end
+  /// of day (12:00 night) which matches the library's convention.
+  Kenat endOf(String unit) {
+    switch (unit) {
+      case 'day':
+        final endTime = Time(12, 0, 'night');
+        return Kenat({
+          'year': _ethiopian['year'],
+          'month': _ethiopian['month'],
+          'day': _ethiopian['day'],
+        }, endTime);
+      default:
+        throw ArgumentError('Invalid unit: $unit');
+    }
+  }
+
+  /// Factory to create from a string (e.g. '2017/1/1') with optional time
+  static Kenat fromString(
+    String input, {
+    int? hour,
+    int? minute,
+    String? period,
+  }) {
+    final time = (hour != null)
+        ? Time(hour, minute ?? 0, period ?? 'day')
+        : null;
+    return Kenat(input, time);
   }
 
   /// Calculates the difference in days from another date
