@@ -208,24 +208,48 @@ class IslamicConversions {
     int hDay,
     int gregorianYear,
   ) {
-    // This is a simplified implementation
-    // For production use, consider using a dedicated Islamic calendar library like 'package:islamic_calendar'
+    // Use a tabular Islamic (arithmetical) conversion to compute Julian Day then convert to Gregorian.
+    // This is much more accurate than the previous stub and suitable for finding Hijri month ranges.
 
-    // Approximate conversion: Hijri to Gregorian
-    // This is not accurate for all dates and should be replaced with proper Islamic calendar calculations
-    final baseGregorianYear = hYear + 622 - (hYear / 33).round();
-
-    if (baseGregorianYear != gregorianYear) {
-      return null; // Date not found in the specified Gregorian year
+    // Convert Hijri date to Julian Day (integer)
+    int _jdFromHijri(int y, int m, int d) {
+      final int iYear = y;
+      final int iMonth = m;
+      final int iDay = d;
+      final int jd =
+          (iDay +
+                  ((29.5 * (iMonth - 1)).ceil()) +
+                  (iYear - 1) * 354 +
+                  ((3 + 11 * iYear) / 30).floor() +
+                  1948440 -
+                  1)
+              .toInt();
+      return jd;
     }
 
-    // Simplified month and day calculation
-    // In reality, Islamic months have varying lengths and require complex calculations
-    final month = hMonth;
-    final day = hDay;
+    // Convert Julian Day to Gregorian date (UTC)
+    DateTime _gregorianFromJd(int jd) {
+      // Based on algorithm from "Numerical Recipes" / Fliegel-Van Flandern
+      final int j = jd + 32044;
+      final int g = (4 * j + 3) ~/ 146097;
+      final int dg = j - (146097 * g) ~/ 4;
+      final int c = (4 * dg + 3) ~/ 1461;
+      final int dc = dg - (1461 * c) ~/ 4;
+      final int m = (5 * dc + 2) ~/ 153;
+      final int day = dc - (153 * m + 2) ~/ 5 + 1;
+      final int month = m + 3 - 12 * (m ~/ 10);
+      final int year = g * 100 + c - 4800 + (m ~/ 10);
+      return DateTime.utc(year, month, day);
+    }
 
     try {
-      return DateTime.utc(gregorianYear, month, day);
+      final jd = _jdFromHijri(hYear, hMonth, hDay);
+      final gDate = _gregorianFromJd(jd);
+      // Only return if the computed Gregorian year matches the requested year
+      if (gDate.year == gregorianYear) {
+        return gDate;
+      }
+      return null;
     } catch (e) {
       return null;
     }
