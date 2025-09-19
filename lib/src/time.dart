@@ -12,31 +12,57 @@ class Time {
   final int minute;
   final String period;
 
-  /// Constructs a Time instance representing an Ethiopian time.
-  ///
-  /// [hour] - The Ethiopian hour (1-12).
-  /// [minute] - The minute (0-59). Defaults to 0.
-  /// [period] - The period ('day' or 'night'). Defaults to 'day'.
-  ///
-  /// Throws [InvalidTimeError] If any time component is invalid.
-  Time(this.hour, [this.minute = 0, this.period = 'day']) {
-    validateNumericInputs('Time.constructor', {'hour': hour, 'minute': minute});
+  // Private generative constructor used by the public factory.
+  Time._(this.hour, this.minute, this.period);
 
-    if (hour < 1 || hour > 12) {
-      throw InvalidTimeError(
-        'Invalid Ethiopian hour: $hour. Must be between 1 and 12.',
+  /// Constructs a Time instance representing an Ethiopian time.
+  /// Accepts dynamic inputs to mimic JS flexibility; validates and casts internally.
+  factory Time(
+    dynamic hourInput, [
+    dynamic minuteInput = 0,
+    dynamic periodInput = 'day',
+  ]) {
+    // Validate that numeric parts are numbers
+    try {
+      validateNumericInputs('Time.constructor', {
+        'hour': hourInput,
+        'minute': minuteInput,
+      });
+    } catch (e) {
+      rethrow;
+    }
+
+    int h;
+    int m;
+    String p;
+    try {
+      h = (hourInput as num).toInt();
+      m = (minuteInput as num).toInt();
+      p = (periodInput is String) ? periodInput : periodInput.toString();
+    } on TypeError catch (_) {
+      throw InvalidInputTypeError(
+        'Time.constructor',
+        'hour/minute',
+        'number',
+        hourInput,
       );
     }
-    if (minute < 0 || minute > 59) {
+
+    if (h < 1 || h > 12) {
       throw InvalidTimeError(
-        'Invalid minute: $minute. Must be between 0 and 59.',
+        'Invalid Ethiopian hour: $h. Must be between 1 and 12.',
       );
     }
-    if (period != 'day' && period != 'night') {
+    if (m < 0 || m > 59) {
+      throw InvalidTimeError('Invalid minute: $m. Must be between 0 and 59.');
+    }
+    if (p != 'day' && p != 'night') {
       throw InvalidTimeError(
-        'Invalid period: "$period". Must be \'day\' or \'night\'.',
+        'Invalid period: "$p". Must be \'day\' or \'night\'.',
       );
     }
+
+    return Time._(h, m, p);
   }
 
   /// Creates a Time instance from a Gregorian 24-hour time.
@@ -174,13 +200,18 @@ class Time {
   /// [duration] - Map with hours and/or minutes to add.
   /// Returns a new Time instance with the added duration.
   /// Throws [InvalidTimeError] If duration is not a valid map.
-  Time add(Map<String, int> duration) {
+  Time add(Map<String, dynamic> duration) {
     if (duration.isEmpty) {
       throw InvalidTimeError('Duration must be a non-empty map.');
     }
-    final hours = duration['hours'] ?? 0;
-    final minutes = duration['minutes'] ?? 0;
-    validateNumericInputs('Time.add', {'hours': hours, 'minutes': minutes});
+    final hoursRaw = duration['hours'] ?? 0;
+    final minutesRaw = duration['minutes'] ?? 0;
+    validateNumericInputs('Time.add', {
+      'hours': hoursRaw,
+      'minutes': minutesRaw,
+    });
+    final int hours = (hoursRaw as num).toInt();
+    final int minutes = (minutesRaw as num).toInt();
 
     final greg = toGregorian();
     int totalMinutes =
@@ -199,12 +230,18 @@ class Time {
   /// [duration] - Map with hours and/or minutes to subtract.
   /// Returns a new Time instance with the subtracted duration.
   /// Throws [InvalidTimeError] If duration is not a valid map.
-  Time subtract(Map<String, int> duration) {
-    if (duration.isEmpty) {
+  Time subtract(dynamic duration) {
+    if (duration is! Map<String, dynamic>) {
       throw InvalidTimeError('Duration must be a non-empty map.');
     }
-    final hours = duration['hours'] ?? 0;
-    final minutes = duration['minutes'] ?? 0;
+    Map<String, dynamic> dur = duration;
+    if (dur.isEmpty) {
+      throw InvalidTimeError('Duration must be a non-empty map.');
+    }
+    final hoursRaw = dur['hours'] ?? 0;
+    final minutesRaw = dur['minutes'] ?? 0;
+    final int hours = (hoursRaw as num).toInt();
+    final int minutes = (minutesRaw as num).toInt();
 
     return add({'hours': -hours, 'minutes': -minutes});
   }

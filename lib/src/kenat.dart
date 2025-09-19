@@ -110,6 +110,12 @@ class Kenat {
     return _time;
   }
 
+  /// Returns current Ethiopian Time for the instance (based on system clock)
+  Time getCurrentTime() {
+    final now = DateTime.now();
+    return Time.fromGregorian(now.hour, now.minute);
+  }
+
   /// Public accessor for time to support chaining-style API (`.time`).
   Time? get time => _time;
 
