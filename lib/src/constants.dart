@@ -80,6 +80,7 @@ class HolidayTags {
   static const String public = "public";
   static const String religious = "religious";
   static const String christian = "christian";
+  static const String orthodox = "orthodox";
   static const String muslim = "muslim";
   static const String state = "state";
   static const String cultural = "cultural";

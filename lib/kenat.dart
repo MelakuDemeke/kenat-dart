@@ -48,6 +48,7 @@ export 'src/day_arithmetic.dart';
 export 'src/bahire_hasab.dart';
 export 'src/holidays.dart';
 export 'src/fasting.dart';
+export 'src/saints.dart' show OrthodoxSaints;
 
 // Formatting and display
 export 'src/formatting.dart';

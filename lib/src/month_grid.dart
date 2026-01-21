@@ -8,6 +8,7 @@ import 'geez_converter.dart';
 import 'constants.dart';
 import 'utils.dart';
 import 'errors/error_handler.dart';
+import 'saints.dart';
 
 /// MonthGrid class for generating calendar grids
 class MonthGrid {
@@ -128,6 +129,7 @@ class MonthGrid {
   List<Map<String, dynamic>> _getFilteredHolidays() {
     List<String>? filter = holidayFilter;
     if (mode == 'christian') filter = [HolidayTags.christian];
+    if (mode == 'orthodox') filter = [HolidayTags.orthodox, HolidayTags.christian];
     if (mode == 'muslim') filter = [HolidayTags.muslim];
     if (mode == 'public') filter = [HolidayTags.public];
 
@@ -137,12 +139,10 @@ class MonthGrid {
     });
   }
 
-  /// Gets saints map for the month (placeholder - would need nigs.js conversion)
+  /// Gets saints map for the month
   Map<int, List<Map<String, dynamic>>> _getSaintsMap() {
-    if (mode != 'christian') return {};
-    // This would need the nigs.js conversion for saint days
-    // For now, return empty map
-    return {};
+    if (mode != 'christian' && mode != 'orthodox') return {};
+    return OrthodoxSaints.getSaintsForMonth(month, weekdayLang);
   }
 
   /// Merges days with holidays and saints
@@ -175,7 +175,7 @@ class MonthGrid {
       final key = '${eth['year']}-${eth['month']}-${eth['day']}';
       List<Map<String, dynamic>> holidays = holidayMap[key] ?? [];
 
-      if (mode == 'christian') {
+      if (mode == 'christian' || mode == 'orthodox') {
         holidays = [...holidays, ...(saintsMap[eth['day']] ?? [])];
       }
 
