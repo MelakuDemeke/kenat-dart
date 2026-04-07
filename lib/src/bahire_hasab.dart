@@ -164,8 +164,11 @@ class BahireHasab {
     final abektie = (wenber * 11) % 30;
     final metqi = (wenber * 19) % 30;
 
-    final bealeMetqiMonth = metqi > 14 ? 1 : 2;
-    final bealeMetqiDay = metqi;
+    // In Bahire Hasab tradition, a computed metqi value of 0 is treated as 30
+    // for date placement so we avoid invalid day 0 dates.
+    final actualMetqi = metqi == 0 ? 30 : metqi;
+    final bealeMetqiMonth = actualMetqi > 14 ? 1 : 2;
+    final bealeMetqiDay = actualMetqi;
     final bealeMetqiDate = {
       'year': ethiopianYear,
       'month': bealeMetqiMonth,
@@ -180,8 +183,12 @@ class BahireHasab {
         ? mebajaHamerSum % 30
         : mebajaHamerSum;
 
-    int ninevehMonth = metqi > 14 ? 5 : 6;
-    if (mebajaHamerSum > 30) ninevehMonth++;
+    // Map Nineveh base month explicitly from the Metqi branch:
+    // Meskerem branch -> Yekatit/Megabit transition, Tikimt branch -> Megabit/Miyazia transition.
+    int ninevehMonth = actualMetqi > 14 ? 5 : 6;
+    if (mebajaHamerSum > 30) {
+      ninevehMonth++;
+    }
     final ninevehDate = {
       'year': ethiopianYear,
       'month': ninevehMonth,
