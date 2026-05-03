@@ -319,7 +319,7 @@ class Holidays {
     key: 'eidAdha',
     name: {'amharic': 'ዒድ አል አድሐ', 'english': 'Eid al-Adha'},
     description: {
-      'amharic': 'አብርሃም ለእግዚአብሔር በመታዘዝ ልጁን ለመሠዋት ፈቃደኝነቱን የሚያስታውስ በዓል።',
+      'amharic': 'ኢድ አል-አድሃ (የአረፋ በዓል) ከታላቁ የሐጅ ጉዞ ማጠናቀቂያ በኋላ የሚከበርና ነቢዩ ኢብራሂም (አብርሃም) ልጃቸውን እስማኤልን ለመሰዋት ያሳዩትን ታማኝነት እና ተገዢነት የሚዘከርበት ትልቅ የእስልምና በዓል ነው።',
       'english':
           "Commemorates Abraham's willingness to sacrifice his son as an act of obedience to God.",
     },
