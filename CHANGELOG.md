@@ -1,3 +1,8 @@
+## 1.0.1
+
+* Added `example/` folder to improve pub.dev score.
+* Shortened pubspec description to comply with pub.dev limits.
+
 ## 1.0.0
 
 * Initial release of the Kenat Ethiopian calendar library for Dart.
