@@ -1,3 +1,16 @@
+## 2.0.0
+
+* Rewrote the Orthodox saints data model to match the upstream `nigs.json` schema exactly (day-keyed, flat entries), fixing MonthGrid so Christian-mode calendars correctly gate saints by `negs`/`showAllSaints` instead of always showing every saint.
+* Fixed `MonthGrid`'s `weekStart` default (Sunday → Monday, matching the JS/TS reference) and made an invalid `weekdayLang` throw `InvalidGridConfigError` instead of silently defaulting.
+* Fixed `KenatError.toJson()`'s `type` field, which previously always reported `'KenatError'` regardless of the actual error subclass.
+* Fixed the broken `gregorianToHijri` stub, which previously returned nonsense values.
+* Added the distance-to-date API: `distanceTo`, `distanceFromToday`, `Kenat.distanceToHoliday`, `Kenat.formatDistance`, `Kenat.generateDateRange`.
+* Added Gregorian-calendar rendering: `calendar: 'gregorian'` support in `format`/`getDate`/`toISOString`, plus `formatGregorianStandard/WithWeekday/WithTime` and `toGregorianISODateString`.
+* Added static `Kenat.getStaticMonthCalendar`/`Kenat.getYearCalendar`, and a console `printThisMonth()` (backed by a new render module).
+* Added `getDate`, `isSameMonth`, `isSameYear`, `toJson`, `isHoliday`, and `startOf`/`endOf('year')`.
+* Fixed `setTime` to always return a new instance instead of mutating in place, and corrected `startOf('day')`'s time value.
+* Corrected the Ramadan fasting description text and removed an undocumented Islamic-holiday-date fallback that had no basis in the reference implementation.
+
 ## 1.0.1
 
 * Added `example/` folder to improve pub.dev score.
