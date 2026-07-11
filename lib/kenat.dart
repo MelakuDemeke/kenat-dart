@@ -53,6 +53,7 @@ export 'src/saints.dart' show OrthodoxSaints;
 // Formatting and display
 export 'src/formatting.dart';
 export 'src/month_grid.dart';
+export 'src/render/print_month_calendar_grid.dart';
 
 // Error handling
 export 'src/errors/error_handler.dart';
@@ -73,5 +74,9 @@ export 'src/formatting.dart'
         formatInGeezAmharic,
         formatWithTime,
         formatWithWeekday,
-        formatShort;
+        formatShort,
+        formatGregorianStandard,
+        formatGregorianWithWeekday,
+        formatGregorianWithTime,
+        toGregorianISODateString;
 export 'src/month_grid.dart' show createMonthGrid;
