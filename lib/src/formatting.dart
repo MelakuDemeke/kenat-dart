@@ -20,7 +20,10 @@ class DateFormatter {
     String lang = 'amharic',
   ]) {
     final names = lang == 'english' ? MonthNames.english : MonthNames.amharic;
-    final monthName = names[etDate['month']! - 1];
+    final monthIndex = etDate['month']! - 1;
+    final monthName = (monthIndex >= 0 && monthIndex < names.length)
+        ? names[monthIndex]
+        : 'Month${etDate['month']}';
     return '$monthName ${etDate['day']} ${etDate['year']}';
   }
 
@@ -30,7 +33,10 @@ class DateFormatter {
   ///
   /// Returns formatted string like "መስከረም ፲፩ ፳፻፲፮".
   static String formatInGeezAmharic(Map<String, dynamic> etDate) {
-    final monthName = MonthNames.amharic[etDate['month']! - 1];
+    final monthIndex = etDate['month']! - 1;
+    final monthName = (monthIndex >= 0 && monthIndex < MonthNames.amharic.length)
+        ? MonthNames.amharic[monthIndex]
+        : 'Month${etDate['month']}';
     return '$monthName ${toGeez(etDate['day']!)} ${toGeez(etDate['year']!)}';
   }
 
@@ -78,9 +84,13 @@ class DateFormatter {
     final weekdayName = lang == 'english'
         ? DaysOfWeek.english[weekdayIndex]
         : DaysOfWeek.amharic[weekdayIndex];
-    final monthName = lang == 'english'
-        ? MonthNames.english[etDate['month']! - 1]
-        : MonthNames.amharic[etDate['month']! - 1];
+    final monthNames = lang == 'english'
+        ? MonthNames.english
+        : MonthNames.amharic;
+    final monthIndex = etDate['month']! - 1;
+    final monthName = (monthIndex >= 0 && monthIndex < monthNames.length)
+        ? monthNames[monthIndex]
+        : 'Month${etDate['month']}';
     final day = useGeez ? toGeez(etDate['day']!) : etDate['day'].toString();
     final year = useGeez ? toGeez(etDate['year']!) : etDate['year'].toString();
 
@@ -120,6 +130,83 @@ class DateFormatter {
     final suffix = time['period'] == 'night' ? '+12h' : '';
 
     return '$y-$m-${d}T$hr:$min$suffix';
+  }
+
+  /// Formats a Gregorian date using its English month name.
+  ///
+  /// [gDate] - Gregorian date object with year, month, day.
+  ///
+  /// Returns formatted string like "September 11, 2023".
+  static String formatGregorianStandard(Map<String, dynamic> gDate) {
+    final monthIndex = gDate['month']! - 1;
+    final monthName = (monthIndex >= 0 && monthIndex < MonthNames.gregorian.length)
+        ? MonthNames.gregorian[monthIndex]
+        : 'Month${gDate['month']}';
+    return '$monthName ${gDate['day']}, ${gDate['year']}';
+  }
+
+  /// Formats a Gregorian date object with the weekday name, month name, day, and year.
+  ///
+  /// [gDate] - Gregorian date object with year, month, day.
+  /// [lang] - The language to use for the weekday name. Defaults to 'english'.
+  ///
+  /// Returns formatted string like "Monday, September 11, 2023".
+  static String formatGregorianWithWeekday(
+    Map<String, dynamic> gDate, [
+    String lang = 'english',
+  ]) {
+    final date = DateTime.utc(gDate['year']!, gDate['month']!, gDate['day']!);
+    final weekdayIndex = date.weekday % 7; // DateTime Monday=1..Sunday=7 -> Sunday=0
+    final weekdayName = lang == 'english'
+        ? DaysOfWeek.english[weekdayIndex]
+        : DaysOfWeek.amharic[weekdayIndex];
+    return '$weekdayName, ${formatGregorianStandard(gDate)}';
+  }
+
+  /// Formats a Gregorian date and time as a string.
+  ///
+  /// [gDate] - Gregorian date object with year, month, day.
+  /// [time] - An instance of the Time class.
+  /// [lang] - Language for the time-of-day suffix. Defaults to 'amharic'.
+  ///
+  /// Returns formatted string like "September 11, 2023 08:30 ጠዋት".
+  static String formatGregorianWithTime(
+    Map<String, dynamic> gDate,
+    Time time, [
+    String lang = 'amharic',
+  ]) {
+    final base = formatGregorianStandard(gDate);
+    final timeString = time.format({
+      'lang': lang,
+      'useGeez': false,
+      'zeroAsDash': false,
+    });
+
+    return '$base $timeString';
+  }
+
+  /// Returns a standard ISO 8601 date-time string for a Gregorian date. Unlike
+  /// [toISODateString], the Ethiopian `time` (12-hour, day/night) is converted
+  /// to Gregorian 24-hour time via [Time.toGregorian] and no non-standard
+  /// suffix is appended, so the result is a valid ISO 8601 string.
+  ///
+  /// [gDate] - Gregorian date object with year, month, day.
+  /// [time] - Optional Ethiopian time to convert.
+  static String toGregorianISODateString(
+    Map<String, dynamic> gDate, [
+    Time? time,
+  ]) {
+    final y = gDate['year']!.toString();
+    final m = gDate['month']!.toString().padLeft(2, '0');
+    final d = gDate['day']!.toString().padLeft(2, '0');
+
+    if (time == null) return '$y-$m-$d';
+
+    final greg = time.toGregorian();
+    final hr = greg['hour']!.toString().padLeft(2, '0');
+    final min = greg['minute']!.toString().padLeft(2, '0');
+
+    return '$y-$m-${d}T$hr:$min';
   }
 }
 
@@ -164,4 +251,31 @@ String toISODateString(
   Map<String, dynamic>? time,
 ]) {
   return DateFormatter.toISODateString(etDate, time);
+}
+
+/// Formats a Gregorian date using its English month name.
+String formatGregorianStandard(Map<String, dynamic> gDate) {
+  return DateFormatter.formatGregorianStandard(gDate);
+}
+
+/// Formats a Gregorian date object with the weekday name.
+String formatGregorianWithWeekday(
+  Map<String, dynamic> gDate, [
+  String lang = 'english',
+]) {
+  return DateFormatter.formatGregorianWithWeekday(gDate, lang);
+}
+
+/// Formats a Gregorian date and time as a string.
+String formatGregorianWithTime(
+  Map<String, dynamic> gDate,
+  Time time, [
+  String lang = 'amharic',
+]) {
+  return DateFormatter.formatGregorianWithTime(gDate, time, lang);
+}
+
+/// Returns a standard ISO 8601 date-time string for a Gregorian date.
+String toGregorianISODateString(Map<String, dynamic> gDate, [Time? time]) {
+  return DateFormatter.toGregorianISODateString(gDate, time);
 }
