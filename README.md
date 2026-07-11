@@ -12,15 +12,18 @@
 
 - 🔄 **Date Conversions** — Seamless Ethiopian ↔ Gregorian conversions
 - 📅 **Date Arithmetic** — Add/subtract days, months, and years; compute differences
+- 📏 **Distance API** — Human-friendly "distance to date/holiday" breakdowns and strings
 - 🕌🕍 **Holidays** — Fixed public holidays, movable Christian feasts, and Islamic holidays (Eid, Moulid)
 - 🙏 **Fasting Periods** — Abiy Tsome, Nineveh, Filseta, Tsome Hawaryat, Tsome Dihenet, Ramadan
 - 📖 **Bahire Hasab** — Full Ethiopian ecclesiastical computation system for movable feasts
 - ⏰ **Ethiopian Time** — 12-hour day/night period system with Gregorian conversion
 - 🔢 **Geez Numerals** — Convert Arabic ↔ Ethiopic (Geez) numerals
-- 🗓️ **Calendar Grid** — Generate month grids with holiday and saint data overlays
-- 🏛️ **Orthodox Saints** — Comprehensive hagiography data for all 13 months
+- 🗓️ **Calendar Grid** — Generate month/year grids with holiday and saint data overlays, `mode`-based filtering, and console printing
+- 🏛️ **Orthodox Saints (Nigs)** — Monthly commemoration data sourced from the same `nigs.json` schema as the JS/TS library, gated by `negs`/`showAllSaints`
+- 🌐 **Calendar Preference** — Render dates in Ethiopian or Gregorian on demand (`format`, `getDate`, `toISOString`)
+- 🧾 **Serialization** — `toJson()` for clean `Kenat` → `Map`/JSON output
 - 🌐 **Multilingual** — Amharic and English support throughout the API
-- ⚠️ **Error Handling** — Descriptive, typed error classes for all failure modes
+- ⚠️ **Error Handling** — Descriptive, typed error classes (with `toJson()`) for all failure modes
 
 ---
 
@@ -106,7 +109,41 @@ d.formatWithWeekday();         // "ሐሙስ, ግንቦት 15 2016"
 d.formatWithWeekday('english', true); // with Geez numerals
 d.formatShort();               // "2016/09/15"
 d.toISODateString();           // "2016-09-15"
+
+// Unified format() supports lang, showWeekday, useGeez, includeTime, and calendar
+d.format(lang: 'english', showWeekday: true, includeTime: true);
 ```
+
+#### Calendar Preference (Ethiopian / Gregorian)
+
+If your app lets users choose between the Ethiopian and Gregorian calendar, pass `calendar: 'gregorian'` to `format()`, `getDate()`, or `toISOString()` instead of branching at every call site:
+
+```dart
+final date = Kenat('2016/1/1');
+const userPref = 'gregorian'; // e.g. from a user setting
+
+date.format(calendar: userPref);      // → "September 12, 2023"
+date.getDate(calendar: userPref);     // → {year: 2023, month: 9, day: 12}
+date.toISOString(calendar: userPref); // → "2023-09-12T06:00" (standard ISO 8601)
+
+date.format(); // → defaults to 'ethiopian': "መስከረም 1 2016"
+```
+
+#### Serialization
+
+`Kenat` instances serialize cleanly via `toJson()`:
+
+```dart
+final date = Kenat('2017/1/15');
+print(date.toJson());
+// → {
+//     ethiopian: {year: 2017, month: 1, day: 15},
+//     gregorian: {year: 2024, month: 9, day: 25},
+//     time: {hour: 12, minute: 0, period: 'day'}
+//   }
+```
+
+Custom exceptions (`InvalidEthiopianDateError`, `UnknownHolidayError`, etc.) also expose `toJson()`, with a `type` field that correctly reflects the concrete error class, for structured error handling/logging.
 
 #### Date Arithmetic
 
@@ -124,13 +161,36 @@ d.diffInYears(other);   // int
 d.diffBreakdown(other); // {years, months, days}
 ```
 
+#### Distance API
+
+Human-friendly "distance to a date or holiday" helpers built on `diffBreakdown`:
+
+```dart
+final a = Kenat.fromEthiopian(2015, 5, 15);
+final b = Kenat.fromEthiopian(2012, 5, 15);
+
+print(a.distanceTo(b, {'units': ['years', 'months', 'days'], 'output': 'string'}));
+// → "3 years 0 months 0 days"
+
+print(Kenat.fromEthiopian(2018, 1, 1).distanceFromToday({'output': 'string'}));
+
+// Distance to the nearest occurrence of a holiday (past or future)
+print(Kenat.distanceToHoliday('fasika', {
+  'direction': 'future',
+  'units': ['days'],
+  'output': 'string',
+}));
+```
+
 #### Date Comparison
 
 ```dart
-d.isBefore(other);  // bool
-d.isAfter(other);   // bool
-d.isSameDay(other); // bool
-d == other;         // equality by date
+d.isBefore(other);   // bool
+d.isAfter(other);    // bool
+d.isSameDay(other);  // bool
+d.isSameMonth(other); // bool
+d.isSameYear(other);  // bool
+d == other;          // equality by date
 ```
 
 #### Navigation
@@ -286,7 +346,7 @@ final grid = createMonthGrid({
   'month': 9,
   'useGeez': false,
   'weekdayLang': 'amharic', // or 'english'
-  'weekStart': 0,           // 0=Sunday, 1=Monday, ...
+  'weekStart': 1,           // 0=Sunday, 1=Monday(default), ...
   'mode': 'public',         // 'public' | 'christian' | 'orthodox' | 'muslim'
 });
 
@@ -307,6 +367,46 @@ print(grid['headers']);   // ["እሑድ","ሰኞ","ማክሰኞ",...]
 // Navigate months
 final nextMonth = grid['up']();
 final prevMonth = grid['down']();
+```
+
+#### Orthodox Saints (Nigs)
+
+With `mode: 'christian'`, each day's `holidays` list is enriched with Orthodox monthly commemoration ("Nigs") entries sourced from the same day-keyed `nigs.json` schema as the JS/TS library. A saint only appears if the requested month is one of its major-feast months (its `negs` list) — pass `showAllSaints: true` to list every saint recurring on that day-of-month, every month:
+
+```dart
+final christianGrid = createMonthGrid({
+  'year': 2016,
+  'month': 9,
+  'mode': 'christian',
+});
+
+final allSaintsGrid = createMonthGrid({
+  'year': 2016,
+  'month': 9,
+  'mode': 'christian',
+  'showAllSaints': true,
+});
+
+// Saint entries look like:
+// { key, name, description, major, isNigs, tags: ['religious', 'christian', 'NIGS' | 'SAINT_DAY'] }
+```
+
+#### Static Calendar Methods
+
+```dart
+final monthCalendar = Kenat.getStaticMonthCalendar(2017, 1, {
+  'useGeez': false,
+  'weekdayLang': 'amharic',
+});
+
+final yearCalendar = Kenat.getYearCalendar(2017); // List of 13 month objects
+
+final start = Kenat.fromEthiopian(2017, 1, 1);
+final end = Kenat.fromEthiopian(2017, 1, 10);
+final range = Kenat.generateDateRange(start, end); // List<Kenat>, inclusive
+
+// Print the current month as an ASCII grid to the console
+Kenat.now().printThisMonth();
 ```
 
 ---
@@ -372,7 +472,7 @@ formatWithWeekday({'year': 2016, 'month': 9, 'day': 15});
 
 ## 🧪 Testing
 
-The library ships with 12 test suites covering all modules:
+The library ships with 17 test suites covering all modules:
 
 ```bash
 dart test
