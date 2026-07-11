@@ -179,6 +179,13 @@ class Conversions {
 }
 
 /// Islamic/Hijri calendar conversion functions
+///
+/// NOTE: kenat (TS) computes Hijri conversions via ICU (`Intl.DateTimeFormat`
+/// with the `islamic` calendar), while this Dart port uses a pure tabular/
+/// arithmetical Islamic calendar algorithm (no ICU equivalent readily
+/// available in Dart). The two approaches can disagree by a day at some
+/// month boundaries. This is an accepted, known limitation - not something
+/// fixed in this pass.
 class IslamicConversions {
   /// Get Hijri year from a Gregorian date
   /// Note: This is a simplified implementation. For production use, consider using a dedicated Islamic calendar library.
@@ -274,26 +281,22 @@ class IslamicConversions {
     return jd;
   }
 
-  /// Converts a Gregorian date to Hijri date
-  /// Note: This is a simplified implementation and may not be accurate for all dates.
+  /// Converts a Gregorian date to Hijri date using the same tabular
+  /// (arithmetical) Islamic calendar algorithm used by [getHijriYear] and
+  /// [hijriToGregorian]. Note: this does not exist in the TS reference
+  /// implementation (which relies on ICU via `Intl.DateTimeFormat`), so
+  /// results may disagree by a day at some month boundaries versus TS. This
+  /// is an accepted known limitation of the pure-Dart tabular algorithm.
   ///
   /// [gregorianDate] - The Gregorian date to convert
   ///
   /// Returns a map with hijriYear, hijriMonth, and hijriDay
   static Map<String, int> gregorianToHijri(DateTime gregorianDate) {
-    // This is a simplified implementation
-    // For production use, consider using a dedicated Islamic calendar library
-
-    final hijriYear = getHijriYear(gregorianDate);
-
-    // Simplified calculation - in reality this requires complex astronomical calculations
-    final hijriMonth = gregorianDate.month;
-    final hijriDay = gregorianDate.day;
-
+    final islamic = _gregorianToIslamic(gregorianDate);
     return {
-      'hijriYear': hijriYear,
-      'hijriMonth': hijriMonth,
-      'hijriDay': hijriDay,
+      'hijriYear': islamic['year']!,
+      'hijriMonth': islamic['month']!,
+      'hijriDay': islamic['day']!,
     };
   }
 }
