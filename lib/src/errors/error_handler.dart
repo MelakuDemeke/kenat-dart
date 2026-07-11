@@ -4,12 +4,16 @@ library;
 /// Base class for all custom errors in the Kenat library.
 class KenatError implements Exception {
   final String message;
-  final String type;
 
-  KenatError(this.message) : type = 'KenatError';
+  KenatError(this.message);
+
+  /// Serialized error type. Mirrors JS's `this.constructor.name`: derived
+  /// from the concrete runtime type so every subclass self-reports its own
+  /// name without needing to override this getter.
+  String get type => runtimeType.toString();
 
   @override
-  String toString() => 'KenatError: $message';
+  String toString() => '$type: $message';
 
   /// Provides a serializable representation of the error.
   Map<String, dynamic> toJson() {
@@ -127,4 +131,17 @@ class InvalidTimeError extends KenatError {
 /// Thrown for invalid configuration options passed to MonthGrid.
 class InvalidGridConfigError extends KenatError {
   InvalidGridConfigError(super.message);
+}
+
+/// Thrown when an unknown movable holiday key is used.
+class UnknownHolidayError extends KenatError {
+  final dynamic holidayKey;
+
+  UnknownHolidayError(this.holidayKey)
+    : super('Unknown movable holiday key: "$holidayKey"');
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {...super.toJson(), 'holidayKey': holidayKey};
+  }
 }

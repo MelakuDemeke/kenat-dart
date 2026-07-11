@@ -8,14 +8,6 @@ import 'conversions.dart';
 import 'errors/error_handler.dart';
 import 'constants.dart';
 
-/// Unknown holiday error for Bahire Hasab
-class UnknownHolidayError extends KenatError {
-  final String holidayKey;
-
-  UnknownHolidayError(this.holidayKey)
-    : super('Unknown holiday key: $holidayKey');
-}
-
 /// Bahire Hasab calculation class
 class BahireHasab {
   /// Calculates all Bahire Hasab values for a given Ethiopian year, including all movable feasts.
