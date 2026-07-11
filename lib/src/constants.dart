@@ -605,8 +605,9 @@ class Fasting {
     key: 'RAMADAN',
     name: {'amharic': 'ረመዳን', 'english': 'Ramadan'},
     description: {
-      'amharic': 'የሙስሊሞች ዋናው የጾም ወር።',
-      'english': 'The holy month of fasting for Muslims.',
+      'amharic': 'ረመዳን በሂጅራ አቆጣጠር ዘጠነኛው ወር እና በሙስሊሞች ዘንድ የጾም፣ ጸሎት ወር ነው',
+      'english':
+          'The Islamic month of fasting from dawn to sunset; a time of prayer, reflection, and charity.',
     },
     tags: [HolidayTags.religious, HolidayTags.muslim],
   );

@@ -105,23 +105,7 @@ class HolidayCalculator {
             gregorianDate.day,
           );
 
-          // Check previous day only if needed: if the current mapping's
-          // Ethiopian year is not the target but the previous day's is,
-          // prefer the previous day. This avoids shifting occurrences like
-          // Moulid that are already correctly aligned.
-          final prev = DateTime(
-            gregorianDate.year,
-            gregorianDate.month,
-            gregorianDate.day,
-          ).subtract(const Duration(days: 1));
-          final prevEc = Conversions.toEC(prev.year, prev.month, prev.day);
-
           if (ecDate['year'] == ethiopianYear) {
-            // Current mapping already falls within the target Ethiopian year;
-            // prefer it. Only prefer the previous Gregorian day when the
-            // current mapping's Ethiopian year does NOT match the target but
-            // the previous day's mapping does. This mirrors the original JS
-            // library behavior.
             occurrences.add({
               'gregorian': {
                 'year': gregorianDate.year,
@@ -129,15 +113,6 @@ class HolidayCalculator {
                 'day': gregorianDate.day,
               },
               'ethiopian': ecDate,
-            });
-          } else if (prevEc['year'] == ethiopianYear) {
-            occurrences.add({
-              'gregorian': {
-                'year': prev.year,
-                'month': prev.month,
-                'day': prev.day,
-              },
-              'ethiopian': prevEc,
             });
           }
         }
