@@ -4,6 +4,7 @@ import 'package:kenat/src/month_grid.dart';
 import 'package:kenat/src/conversions.dart';
 import 'package:kenat/src/constants.dart';
 import 'package:kenat/src/utils.dart';
+import 'package:kenat/src/errors/error_handler.dart';
 
 void main() {
   group('MonthGrid.create / createMonthGrid', () {
@@ -102,13 +103,17 @@ void main() {
       );
     });
 
-    test('uses default amharic weekday names if invalid weekdayLang', () {
-      final result = createMonthGrid({
-        'year': 2015,
-        'month': 9,
-        'weekdayLang': 'invalid',
-      });
-      expect(result['headers'], DaysOfWeek.amharic);
+    test('throws InvalidGridConfigError for invalid weekdayLang', () {
+      // Matches TS's contract (MonthGrid.ts throws InvalidGridConfigError
+      // for an invalid weekdayLang instead of silently coercing).
+      expect(
+        () => createMonthGrid({
+          'year': 2015,
+          'month': 9,
+          'weekdayLang': 'invalid',
+        }),
+        throwsA(isA<InvalidGridConfigError>()),
+      );
     });
 
     test('pads days array correctly based on weekStart', () {

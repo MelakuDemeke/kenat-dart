@@ -1,61 +1,18 @@
 /// Orthodox saints commemorations
-/// Contains monthly and yearly saint celebrations
+///
+/// Sourced from kenat's `nigs.json`: Orthodox Tewahedo monthly commemorations
+/// ("Nigs" days), grouped by day-of-month ("1"-"30"). Each entry is
+/// `{id, name, description, major, negs}` where `negs` lists the Ethiopian
+/// months in which that day is a major/yearly feast (an empty list means the
+/// day is only a recurring monthly commemoration, never a yearly major one).
 library;
 
-/// Saint information with names, descriptions, and celebration details
-class SaintInfo {
-  final String key;
-  final Map<String, String> name;
-  final Map<String, String> description;
-  final int recuringDate; // Day of month (1-30)
-  final bool major;
-  final dynamic negs; // null, int, or List<int> - months when this saint is celebrated yearly
+import 'constants.dart';
 
-  const SaintInfo({
-    required this.key,
-    required this.name,
-    required this.description,
-    required this.recuringDate,
-    required this.major,
-    this.negs,
-  });
-}
-
-/// Saint event (for saints with multiple events)
-class SaintEvent {
-  final String key;
-  final Map<String, String> description;
-  final bool major;
-  final dynamic negs;
-
-  const SaintEvent({
-    required this.key,
-    required this.description,
-    required this.major,
-    this.negs,
-  });
-}
-
-/// Saints with multiple events
-class MultiEventSaint {
-  final Map<String, String> name;
-  final int recuringDate;
-  final Map<String, String> defaultDescription;
-  final List<SaintEvent> events;
-
-  const MultiEventSaint({
-    required this.name,
-    required this.recuringDate,
-    required this.defaultDescription,
-    required this.events,
-  });
-}
-
-/// Orthodox monthly saints data
-class OrthodoxSaints {
-  static const Map<String, dynamic> orthodoxMonthlydays = {
-    'ledeta_mariam': {
-      'key': 'ledeta_mariam',
+const Map<String, List<Map<String, dynamic>>> _orthodoxDaysById = {
+  '1': [
+    {
+      'id': 'ledeta_mariam',
       'name': {
         'english': 'Ldata Mariam, The nativity of Our Holy Mother Virgin Mariam',
         'amharic': 'ልደታ ማርያም',
@@ -64,12 +21,11 @@ class OrthodoxSaints {
         'english': 'Commemoration of the birth of St. Mary.',
         'amharic': 'የቅድስት ድንግል ማርያም ልደት መታሰቢያ።',
       },
-      'recuringDate': 1,
       'major': true,
-      'negs': 9,
+      'negs': [9],
     },
-    'archangel_raguel': {
-      'key': 'archangel_raguel',
+    {
+      'id': 'archangel_raguel',
       'name': {
         'english': 'Archangel Raguel',
         'amharic': 'ራጉኤል',
@@ -78,12 +34,11 @@ class OrthodoxSaints {
         'english': 'Commemoration of Archangel Raguel.',
         'amharic': 'የመላኩ ራጉኤል መታሰቢያ።',
       },
-      'recuringDate': 1,
       'major': true,
-      'negs': null,
+      'negs': [],
     },
-    'bartholomew_the_apostle': {
-      'key': 'bartholomew_the_apostle',
+    {
+      'id': 'bartholomew_the_apostle',
       'name': {
         'english': 'Bartholomew the Apostle',
         'amharic': 'ሐዋርያው በርተሎሜዎስ',
@@ -92,12 +47,11 @@ class OrthodoxSaints {
         'english': 'Commemoration of Bartholomew the Apostle.',
         'amharic': 'የሐዋርያው በርተሎሜዎስ መታሰቢያ።',
       },
-      'recuringDate': 1,
       'major': true,
-      'negs': null,
+      'negs': [],
     },
-    'prophet_elijah_ginbot': {
-      'key': 'prophet_elijah_ginbot',
+    {
+      'id': 'prophet_elijah_ginbot',
       'name': {
         'english': 'Prophet Elijah',
         'amharic': 'ነብዩ ኤልያስ',
@@ -106,12 +60,11 @@ class OrthodoxSaints {
         'english': 'Commemoration of Prophet Elijah.',
         'amharic': 'የነብዩ ኤልያስ መታሰቢያ።',
       },
-      'recuringDate': 1,
       'major': true,
-      'negs': 4,
+      'negs': [4],
     },
-    'kidus_yohannes': {
-      'key': 'kidus_yohannes',
+    {
+      'id': 'kidus_yohannes',
       'name': {
         'english': 'Kidus Yohannes',
         'amharic': 'ቅዱስ ዮሐንስ',
@@ -120,12 +73,13 @@ class OrthodoxSaints {
         'english': 'Commemoration of Kidus Yohannes.',
         'amharic': 'የቅዱስ ዮሐንስ መታሰቢያ።',
       },
-      'recuringDate': 1,
       'major': false,
-      'negs': 1,
+      'negs': [1],
     },
-    'abba_guba': {
-      'key': 'abba_guba',
+  ],
+  '2': [
+    {
+      'id': 'abba_guba',
       'name': {
         'english': 'Abba Guba, one of the Nine Saints',
         'amharic': 'አባ ጉባ',
@@ -134,73 +88,65 @@ class OrthodoxSaints {
         'english': 'Commemoration of Abba Guba, one of the Nine Saints.',
         'amharic': 'ከዘጠኙ ቅዱሳን አንዱ የአባ ጉባ መታሰቢያ።',
       },
-      'recuringDate': 2,
       'major': true,
-      'negs': null,
+      'negs': [],
     },
-    'thaddeus_the_apostle': {
+    {
+      'id': 'thaddeus_the_apostle_major',
       'name': {
         'english': 'Thaddeus the Apostle',
         'amharic': 'ሐዋርያው ታድዮስ',
       },
-      'recuringDate': 2,
-      'defaultDescription': {
+      'description': {
         'english': 'Commemoration of Thaddeus the Apostle.',
-        'amharic': 'ሐዋርያው ታድዮስ መታሰቢያ',
+        'amharic': 'የሐዋርያው ታድዮስ መታሰቢያ።',
       },
-      'events': [
-        {
-          'key': 'thaddeus_the_apostle_major',
-          'description': {
-            'english': 'Commemoration of Thaddeus the Apostle.',
-            'amharic': 'የሐዋርያው ታድዮስ መታሰቢያ።',
-          },
-          'major': true,
-          'negs': 11,
-        },
-        {
-          'key': 'thaddeus_apostle_minor',
-          'description': {
-            'english': 'Commemoration of Thaddeus the Apostle.',
-            'amharic': 'የሐዋርያው ታድዮስ መታሰቢያ።',
-          },
-          'major': false,
-          'negs': 13,
-        },
-      ],
+      'major': true,
+      'negs': [11],
     },
-    'st_john_the_baptist_martyrdom': {
-      'key': 'st_john_the_baptist_martyrdom',
+    {
+      'id': 'thaddeus_apostle_minor',
+      'name': {
+        'english': 'Thaddeus the Apostle',
+        'amharic': 'ሐዋርያው ታድዮስ',
+      },
+      'description': {
+        'english': 'Commemoration of Thaddeus the Apostle.',
+        'amharic': 'የሐዋርያው ታድዮስ መታሰቢያ።',
+      },
+      'major': false,
+      'negs': [13],
+    },
+    {
+      'id': 'st_john_the_baptist_martyrdom',
       'name': {
         'english': 'The Martyrdom (Beheading) of St. John the Baptist',
         'amharic': 'የቅዱስ ዮሐንስ መጥምቅ አንገት መቁረጥ',
       },
       'description': {
-        'english':
-            'Commemoration of the Martyrdom (Beheading) of St. John the Baptist.',
+        'english': 'Commemoration of the Martyrdom (Beheading) of St. John the Baptist.',
         'amharic': 'የቅዱስ ዮሐንስ መጥምቅ አንገት መቁረጥ መታሰቢያ።',
       },
-      'recuringDate': 2,
       'major': false,
-      'negs': 1,
+      'negs': [1],
     },
-    'beata': {
-      'key': 'beata',
+  ],
+  '3': [
+    {
+      'id': 'beata',
       'name': {
-        'english':
-            'Beata: The Entrance of the three years old Virgin Mariam into the Temple',
+        'english': 'Beata: The Entrance of the three years old Virgin Mariam into the Temple',
         'amharic': 'በአታለማርያም',
       },
       'description': {
         'english': 'Commemoration of St. Mary\'s entrance into the Temple.',
         'amharic': 'የቅድስት ድንግል ማርያም ወደ ቤተመቅደስ መግባት መታሰቢያ።',
       },
-      'recuringDate': 3,
       'major': true,
-      'negs': 4,
+      'negs': [4],
     },
-    'abune_zena_markos': {
-      'key': 'abune_zena_markos',
+    {
+      'id': 'abune_zena_markos',
       'name': {
         'english': 'Abune Zena Markos',
         'amharic': 'አቡነ ዜና ማርቆስ',
@@ -209,12 +155,11 @@ class OrthodoxSaints {
         'english': 'Commemoration of Abune Zena Markos.',
         'amharic': 'የአቡነ ዜና ማርቆስ መታሰቢያ።',
       },
-      'recuringDate': 3,
       'major': true,
-      'negs': null,
+      'negs': [],
     },
-    'archangel_phanuel': {
-      'key': 'archangel_phanuel',
+    {
+      'id': 'archangel_phanuel',
       'name': {
         'english': 'Archangel Phanuel',
         'amharic': 'ቅዱስ ፋኑኤል',
@@ -223,12 +168,11 @@ class OrthodoxSaints {
         'english': 'Commemoration of Archangel Phanuel.',
         'amharic': 'የመላኩ ፋኑኤል መታሰቢያ።',
       },
-      'recuringDate': 3,
       'major': true,
-      'negs': 13,
+      'negs': [13],
     },
-    'saint_neakuto_leab': {
-      'key': 'saint_neakuto_leab',
+    {
+      'id': 'saint_neakuto_leab',
       'name': {
         'english': 'Saint Neakuto Leab',
         'amharic': 'ቅዱስ ነአኩቶ ለአብ',
@@ -237,12 +181,13 @@ class OrthodoxSaints {
         'english': 'Commemoration of Saint Neakuto Leab.',
         'amharic': 'የቅዱስ ነአኩቶ ለአብ መታሰቢያ።',
       },
-      'recuringDate': 3,
       'major': true,
-      'negs': null,
+      'negs': [],
     },
-    'johannis_welde_negedguad': {
-      'key': 'johannis_welde_negedguad',
+  ],
+  '4': [
+    {
+      'id': 'johannis_welde_negedguad',
       'name': {
         'english': 'John the son of the Thunder (Yohannis Welde Negedguad)',
         'amharic': 'ዮሐንስ ወልደ ነጎድጓድ',
@@ -251,12 +196,11 @@ class OrthodoxSaints {
         'english': 'Commemoration of John the son of the Thunder.',
         'amharic': 'የዮሐንስ ወልደ ነጎድጓድ መታሰቢያ።',
       },
-      'recuringDate': 4,
       'major': true,
-      'negs': 5,
+      'negs': [5],
     },
-    'andrew_the_apostle': {
-      'key': 'andrew_the_apostle',
+    {
+      'id': 'andrew_the_apostle',
       'name': {
         'english': 'Andrew the Apostle',
         'amharic': 'ሐዋርያው እንድርያስ',
@@ -265,12 +209,13 @@ class OrthodoxSaints {
         'english': 'Commemoration of Andrew the Apostle.',
         'amharic': 'የሐዋርያው እንድርያስ መታሰቢያ።',
       },
-      'recuringDate': 4,
       'major': true,
-      'negs': 4,
+      'negs': [4],
     },
-    'petros_we_paulos': {
-      'key': 'petros_we_paulos',
+  ],
+  '5': [
+    {
+      'id': 'petros_we_paulos',
       'name': {
         'english': 'Petros we Paulos (Peter and Paul)',
         'amharic': 'ጴጥሮስወ ጳውሎስ',
@@ -279,12 +224,11 @@ class OrthodoxSaints {
         'english': 'Commemoration of Saints Peter and Paul.',
         'amharic': 'የቅዱሳን ጴጥሮስና ጳውሎስ መታሰቢያ።',
       },
-      'recuringDate': 5,
       'major': true,
-      'negs': 11,
+      'negs': [11],
     },
-    'abuna_gebre_menfes_kidus': {
-      'key': 'abuna_gebre_menfes_kidus',
+    {
+      'id': 'abuna_gebre_menfes_kidus',
       'name': {
         'english': 'Abuna Gebre Menfes Kidus',
         'amharic': 'ገብረ መንፈስ ቅዱስ',
@@ -293,12 +237,11 @@ class OrthodoxSaints {
         'english': 'Commemoration of Abuna Gebre Menfes Kidus.',
         'amharic': 'የአቡነ ገብረ መንፈስ ቅዱስ መታሰቢያ።',
       },
-      'recuringDate': 5,
       'major': true,
-      'negs': 2,
+      'negs': [2],
     },
-    'abune_arone': {
-      'key': 'abune_arone',
+    {
+      'id': 'abune_arone',
       'name': {
         'english': 'Abune Arone',
         'amharic': 'አቡነ አሮን',
@@ -307,12 +250,13 @@ class OrthodoxSaints {
         'english': 'Commemoration of Abune Arone.',
         'amharic': 'የአቡነ አሮን መታሰቢያ።',
       },
-      'recuringDate': 5,
       'major': true,
-      'negs': null,
+      'negs': [],
     },
-    'iyyasu': {
-      'key': 'iyyasu',
+  ],
+  '6': [
+    {
+      'id': 'iyyasu',
       'name': {
         'english': 'Iyyasus',
         'amharic': 'ኢየሱስ',
@@ -321,12 +265,11 @@ class OrthodoxSaints {
         'english': 'Commemoration of Iyyasus.',
         'amharic': 'የኢየሱስ መታሰቢያ።',
       },
-      'recuringDate': 6,
       'major': true,
-      'negs': 5,
+      'negs': [5],
     },
-    'dabra_quesqam_mariam': {
-      'key': 'dabra_quesqam_mariam',
+    {
+      'id': 'dabra_quesqam_mariam',
       'name': {
         'english': 'Dabra Quesqam Mariam',
         'amharic': 'ቁስቋም ማርያም',
@@ -335,12 +278,11 @@ class OrthodoxSaints {
         'english': 'Commemoration of Dabra Quesqam Mariam.',
         'amharic': 'የቁስቋም ማርያም መታሰቢያ።',
       },
-      'recuringDate': 6,
       'major': true,
-      'negs': 3,
+      'negs': [3],
     },
-    'saint_arsema': {
-      'key': 'saint_arsema',
+    {
+      'id': 'saint_arsema',
       'name': {
         'english': 'Saint Arsema',
         'amharic': 'አርሴማ',
@@ -349,12 +291,13 @@ class OrthodoxSaints {
         'english': 'Commemoration of Saint Arsema.',
         'amharic': 'የቅድስት አርሴማ መታሰቢያ።',
       },
-      'recuringDate': 6,
       'major': true,
-      'negs': 4,
+      'negs': [4],
     },
-    'holy_trinity': {
-      'key': 'holy_trinity',
+  ],
+  '7': [
+    {
+      'id': 'holy_trinity',
       'name': {
         'english': 'Holy Trinity',
         'amharic': 'አጋዕዝተ አለም ስላሴ',
@@ -363,12 +306,13 @@ class OrthodoxSaints {
         'english': 'Commemoration of the Holy Trinity.',
         'amharic': 'የአጋዕዝተ ዓለም ስላሴ መታሰቢያ።',
       },
-      'recuringDate': 7,
       'major': true,
-      'negs': 5,
+      'negs': [5],
     },
-    'cherubim': {
-      'key': 'cherubim',
+  ],
+  '8': [
+    {
+      'id': 'cherubim',
       'name': {
         'english': 'Cherubim (Four Living Creatures)',
         'amharic': 'ኪሩቤል አርባእቱ እንስሳ',
@@ -377,12 +321,11 @@ class OrthodoxSaints {
         'english': 'Commemoration of the Cherubim, the four living creatures.',
         'amharic': 'የኪሩቤል አርባእቱ እንስሳ መታሰቢያ።',
       },
-      'recuringDate': 8,
       'major': true,
-      'negs': 3,
+      'negs': [3],
     },
-    'saint_matthias_apostle': {
-      'key': 'saint_matthias_apostle',
+    {
+      'id': 'saint_matthias_apostle',
       'name': {
         'english': 'Saint Matthias the Apostle',
         'amharic': 'ሐዋርያው ማትያስ',
@@ -391,12 +334,11 @@ class OrthodoxSaints {
         'english': 'Commemoration of Saint Matthias the Apostle.',
         'amharic': 'የሐዋርያው ማትያስ መታሰቢያ።',
       },
-      'recuringDate': 8,
       'major': true,
-      'negs': 7,
+      'negs': [7],
     },
-    'abune_kiros': {
-      'key': 'abune_kiros',
+    {
+      'id': 'abune_kiros',
       'name': {
         'english': 'Abune Kiros',
         'amharic': 'አቡነ ኪሮስ',
@@ -405,12 +347,11 @@ class OrthodoxSaints {
         'english': 'Commemoration of Abune Kiros.',
         'amharic': 'የአቡነ ኪሮስ መታሰቢያ።',
       },
-      'recuringDate': 8,
       'major': true,
-      'negs': 3,
+      'negs': [3],
     },
-    'abba_banuda': {
-      'key': 'abba_banuda',
+    {
+      'id': 'abba_banuda',
       'name': {
         'english': 'Abba Banuda',
         'amharic': 'አባ ባኑዳ',
@@ -419,12 +360,13 @@ class OrthodoxSaints {
         'english': 'Commemoration of Abba Banuda.',
         'amharic': 'የአባ ባኑዳ መታሰቢያ።',
       },
-      'recuringDate': 8,
       'major': false,
-      'negs': null,
+      'negs': [],
     },
-    'saint_thomas_apostle': {
-      'key': 'saint_thomas_apostle',
+  ],
+  '9': [
+    {
+      'id': 'saint_thomas_apostle',
       'name': {
         'english': 'Saint Thomas the Apostle',
         'amharic': 'ሐዋርያው ቶማስ',
@@ -433,12 +375,11 @@ class OrthodoxSaints {
         'english': 'Commemoration of Saint Thomas the Apostle.',
         'amharic': 'የሐዋርያው ቶማስ መታሰቢያ።',
       },
-      'recuringDate': 9,
       'major': true,
-      'negs': 2,
+      'negs': [2],
     },
-    'abune_isitinifase_kirisitosi': {
-      'key': 'abune_isitinifase_kirisitosi',
+    {
+      'id': 'abune_isitinifase_kirisitosi',
       'name': {
         'english': 'Abune Isitinifase Kirisitosi',
         'amharic': 'አቡነ እስትንፋሰ ክርስቶስ',
@@ -447,42 +388,39 @@ class OrthodoxSaints {
         'english': 'Commemoration of Abune Isitinifase Kirisitosi.',
         'amharic': 'የአቡነ እስትንፋሰ ክርስቶስ መታሰቢያ።',
       },
-      'recuringDate': 9,
       'major': true,
-      'negs': null,
+      'negs': [],
     },
-    'three_eighteen_holy_fathers_nice': {
-      'key': 'three_eighteen_holy_fathers_nice',
+    {
+      'id': 'three_eighteen_holy_fathers_nice',
       'name': {
         'english': 'The 318 holy fathers assembled in the city of Nice',
         'amharic': 'ሰልስቱ ምዕት',
       },
       'description': {
-        'english':
-            'Commemoration of the 318 holy fathers assembled in the city of Nice.',
+        'english': 'Commemoration of the 318 holy fathers assembled in the city of Nice.',
         'amharic': 'በኒቂያ ከተማ የተሰበሰቡት 318 ቅዱሳን አባቶች መታሰቢያ።',
       },
-      'recuringDate': 9,
       'major': true,
-      'negs': null,
+      'negs': [],
     },
-    'holy_cross': {
-      'key': 'holy_cross',
+  ],
+  '10': [
+    {
+      'id': 'holy_cross',
       'name': {
         'english': 'Holy Cross (Masqal)',
         'amharic': 'መስቀለ ክርስቶስ',
       },
       'description': {
-        'english':
-            'Commemoration of the Holy Cross (Masqal)/the finding of true cross.',
+        'english': 'Commemoration of the Holy Cross (Masqal)/the finding of true cross.',
         'amharic': 'የመስቀለ ክርስቶስ መታሰቢያ።',
       },
-      'recuringDate': 10,
       'major': true,
-      'negs': 7,
+      'negs': [7],
     },
-    'tsedeniya_mariyami': {
-      'key': 'tsedeniya_mariyami',
+    {
+      'id': 'tsedeniya_mariyami',
       'name': {
         'english': 'Ts\'edeniya Mariyami',
         'amharic': 'ፀደንያ ማርያም',
@@ -491,12 +429,11 @@ class OrthodoxSaints {
         'english': 'Commemoration of Ts\'edeniya Mariyami.',
         'amharic': 'የፀደንያ ማርያም መታሰቢያ።',
       },
-      'recuringDate': 10,
       'major': true,
-      'negs': 1,
+      'negs': [1],
     },
-    'simon_the_zealot': {
-      'key': 'simon_the_zealot',
+    {
+      'id': 'simon_the_zealot',
       'name': {
         'english': 'Simon the Zealot',
         'amharic': 'ስምኦን ቀኖናዊ ሐዋርያ',
@@ -505,12 +442,13 @@ class OrthodoxSaints {
         'english': 'Commemoration of Simon the Zealot.',
         'amharic': 'የስምኦን ቀኖናዊ ሐዋርያ መታሰቢያ።',
       },
-      'recuringDate': 10,
       'major': true,
-      'negs': 11,
+      'negs': [11],
     },
-    'saint_hanna': {
-      'key': 'saint_hanna',
+  ],
+  '11': [
+    {
+      'id': 'saint_hanna',
       'name': {
         'english': 'Saint Hanna, the mother of our holy Mother',
         'amharic': 'ሐና',
@@ -519,12 +457,11 @@ class OrthodoxSaints {
         'english': 'Commemoration of Saint Hanna, the mother of Our Holy Mother.',
         'amharic': 'የቅድስት ሐና (የእመቤታችን እናት) መታሰቢያ።',
       },
-      'recuringDate': 11,
       'major': true,
-      'negs': 11,
+      'negs': [11],
     },
-    'saint_joachim': {
-      'key': 'saint_joachim',
+    {
+      'id': 'saint_joachim',
       'name': {
         'english': 'Saint Joachim, the father of our holy Mother',
         'amharic': 'ኢያቄም',
@@ -533,12 +470,11 @@ class OrthodoxSaints {
         'english': 'Commemoration of Saint Joachim, the father of Our Holy Mother.',
         'amharic': 'የቅዱስ ኢያቄም (የእመቤታችን አባት) መታሰቢያ።',
       },
-      'recuringDate': 11,
       'major': false,
-      'negs': null,
+      'negs': [],
     },
-    'saint_yared': {
-      'key': 'saint_yared',
+    {
+      'id': 'saint_yared',
       'name': {
         'english': 'Saint Yared',
         'amharic': 'ቅዱስ ያሬድ',
@@ -547,12 +483,11 @@ class OrthodoxSaints {
         'english': 'Commemoration of Saint Yared.',
         'amharic': 'የቅዱስ ያሬድ መታሰቢያ።',
       },
-      'recuringDate': 11,
       'major': true,
-      'negs': 9,
+      'negs': [9],
     },
-    'abune_hara': {
-      'key': 'abune_hara',
+    {
+      'id': 'abune_hara',
       'name': {
         'english': 'Abune Hara',
         'amharic': 'አቡነ ሐራ',
@@ -561,12 +496,13 @@ class OrthodoxSaints {
         'english': 'Commemoration of Abune Hara.',
         'amharic': 'የአቡነ ሐራ መታሰቢያ።',
       },
-      'recuringDate': 11,
       'major': false,
-      'negs': null,
+      'negs': [],
     },
-    'archangel_michael': {
-      'key': 'archangel_michael',
+  ],
+  '12': [
+    {
+      'id': 'archangel_michael',
       'name': {
         'english': 'Archangel Michael',
         'amharic': 'ቅዱስ ሚካኤል',
@@ -575,12 +511,11 @@ class OrthodoxSaints {
         'english': 'Commemoration of Archangel Michael.',
         'amharic': 'የቅዱስ ሚካኤል መታሰቢያ።',
       },
-      'recuringDate': 12,
       'major': true,
       'negs': [3, 12],
     },
-    'matthew_apostle': {
-      'key': 'matthew_apostle',
+    {
+      'id': 'matthew_apostle',
       'name': {
         'english': 'Matthew the Apostle',
         'amharic': 'ሐዋርያ ማቴዎስ',
@@ -589,12 +524,11 @@ class OrthodoxSaints {
         'english': 'Commemoration of Matthew the Apostle.',
         'amharic': 'የሐዋርያ ማቴዎስ መታሰቢያ።',
       },
-      'recuringDate': 12,
       'major': true,
-      'negs': null,
+      'negs': [],
     },
-    'abba_samuel_waldeba': {
-      'key': 'abba_samuel_waldeba',
+    {
+      'id': 'abba_samuel_waldeba',
       'name': {
         'english': 'Abba Samuel from Waldeba',
         'amharic': 'አባ ሳሙኤል',
@@ -603,12 +537,13 @@ class OrthodoxSaints {
         'english': 'Commemoration of Abba Samuel from Waldeba.',
         'amharic': 'ከዋልድባ የአባ ሳሙኤል መታሰቢያ።',
       },
-      'recuringDate': 12,
       'major': true,
-      'negs': 4,
+      'negs': [4],
     },
-    'god_the_father': {
-      'key': 'god_the_father',
+  ],
+  '13': [
+    {
+      'id': 'god_the_father',
       'name': {
         'english': 'Egziabher Abe (God the Father)',
         'amharic': 'እግዚአብሔር አብ',
@@ -617,12 +552,11 @@ class OrthodoxSaints {
         'english': 'Commemoration of God the Father.',
         'amharic': 'የእግዚአብሔር አብ መታሰቢያ።',
       },
-      'recuringDate': 13,
       'major': true,
-      'negs': 3,
+      'negs': [3],
     },
-    'archangel_raphael': {
-      'key': 'archangel_raphael',
+    {
+      'id': 'archangel_raphael',
       'name': {
         'english': 'Archangel Raphael',
         'amharic': 'ቅዱስ ሩፋኤል',
@@ -631,27 +565,26 @@ class OrthodoxSaints {
         'english': 'Commemoration of Archangel Raphael.',
         'amharic': 'የቅዱስ ሩፋኤል መታሰቢያ።',
       },
-      'recuringDate': 13,
       'major': true,
-      'negs': 4,
+      'negs': [4],
     },
-    'saint_abba_zara_buruk': {
-      'key': 'saint_abba_zara_buruk',
+    {
+      'id': 'saint_abba_zara_buruk',
       'name': {
         'english': 'Saint Abba Zar\'a-Buruk',
         'amharic': 'አቡነ ዘርአ ብሩክ',
       },
       'description': {
-        'english':
-            'Commemoration of Saint Abba Zar\'a-Buruk-departed from this world.',
+        'english': 'Commemoration of Saint Abba Zar\'a-Buruk-departed from this world.',
         'amharic': 'የቅዱስ አባ ዘርአ ብሩክ እረፍታቸው መታሰቢያ።',
       },
-      'recuringDate': 13,
       'major': true,
-      'negs': 5,
+      'negs': [5],
     },
-    'abuna_aragwi': {
-      'key': 'abuna_aragwi',
+  ],
+  '14': [
+    {
+      'id': 'abuna_aragwi',
       'name': {
         'english': 'Abuna Aragwi-one of the Nine Saints',
         'amharic': 'አቡነ አረጋዊ ',
@@ -660,12 +593,11 @@ class OrthodoxSaints {
         'english': 'Commemoration of Abuna Aragwi, one of the Nine Saints',
         'amharic': 'ከዘጠኙ ቅዱሳን አንዱ የአቡነ አረጋዊ መታሰቢያ።',
       },
-      'recuringDate': 14,
       'major': true,
-      'negs': 2,
+      'negs': [2],
     },
-    'gabra_krestos_the_hermit': {
-      'key': 'gabra_krestos_the_hermit',
+    {
+      'id': 'gabra_krestos_the_hermit',
       'name': {
         'english': 'Gabra Krestos the hermit',
         'amharic': 'ገብረ ክርስቶስ/ገብረ መርአዊ',
@@ -674,12 +606,13 @@ class OrthodoxSaints {
         'english': 'Commemoration of  Gabra Krestos the hermit.',
         'amharic': 'የገብረ ክርስቶስ ገዳማዊ መታሰቢያ።',
       },
-      'recuringDate': 14,
       'major': true,
-      'negs': 9,
+      'negs': [9],
     },
-    'cyriacus_julietta': {
-      'key': 'cyriacus_julietta',
+  ],
+  '15': [
+    {
+      'id': 'cyriacus_julietta',
       'name': {
         'english': 'St. Cyriacus and St. Julietta',
         'amharic': 'ቂርቆስና እየሉጣ',
@@ -688,27 +621,26 @@ class OrthodoxSaints {
         'english': 'Commemoration of St. Cyriacus and St. Julietta.',
         'amharic': 'የቅዱስ ቂርቆስና የቅድስት እየሉጣ መታሰቢያ።',
       },
-      'recuringDate': 15,
       'major': true,
       'negs': [11, 5],
     },
-    'saint_stefanos_migration_of_his_body': {
-      'key': 'saint_stefanos_migration_of_his_body',
+    {
+      'id': 'saint_stefanos_migration_of_his_body',
       'name': {
         'english': 'Saint Stefanos',
         'amharic': 'ቅዱስ እስጢፋኖስ ',
       },
       'description': {
-        'english':
-            'Commemoration  of Saint Estifanos the First Martyr migration of his body',
+        'english': 'Commemoration  of Saint Estifanos the First Martyr migration of his body',
         'amharic': 'የቅዱስ እስጢፋኖስ ሰማዕት (ቀዳሚ ሰማዕትና ሊቀ ዲያቆናት) አካል ሽግግራቸው መታሰቢያ',
       },
-      'recuringDate': 15,
       'major': false,
-      'negs': null,
+      'negs': [],
     },
-    'kidane_meheret': {
-      'key': 'kidane_meheret',
+  ],
+  '16': [
+    {
+      'id': 'kidane_meheret',
       'name': {
         'english': 'Kidane Meheret - Our Lady, Covenant of Mercy',
         'amharic': 'ኪዳነ ምህረት',
@@ -717,43 +649,39 @@ class OrthodoxSaints {
         'english': 'Commemoration of Kidane Meheret (Covenant of Mercy).',
         'amharic': 'የኪዳነ ምህረት መታሰቢያ።',
       },
-      'recuringDate': 16,
       'major': true,
       'negs': [12, 6],
     },
-    'johannis_welde_negedguad_erget': {
-      'key': 'johannis_welde_negedguad_16',
+    {
+      'id': 'johannis_welde_negedguad_16',
       'name': {
         'english': 'John the son of the Thunder (Yohannis Welde Negedguad)',
         'amharic': 'ዮሐንስ ወልደ ነጎድጓድ',
       },
       'description': {
-        'english':
-            'Commemoration of John, the Son of Thunder his taken away to heaven.',
+        'english': 'Commemoration of John, the Son of Thunder his taken away to heaven.',
         'amharic': 'የዮሐንስ ወልደ ነጎድጓድ ወደ ሰማይ መውሰዳቸው መታሰቢያ።',
       },
-      'recuringDate': 16,
       'major': false,
-      'negs': 11,
+      'negs': [11],
     },
-    'saint_stefanos': {
-      'key': 'saint_stefanos',
+  ],
+  '17': [
+    {
+      'id': 'saint_stefanos',
       'name': {
-        'english':
-            'Saint Stefanos (Stephen the Martyr) - the First Martyr and Archdeacon)',
+        'english': 'Saint Stefanos (Stephen the Martyr) - the First Martyr and Archdeacon)',
         'amharic': 'ቅዱስ እስጢፋኖስ ፣ ሐዋርያውያዕቆብ ወልደ ዘብዲዮስ ፣ አባ ገሪማ',
       },
       'description': {
-        'english':
-            'Commemoration of Saint Stephen the Martyr (First Martyr and Archdeacon) ordination date',
+        'english': 'Commemoration of Saint Stephen the Martyr (First Martyr and Archdeacon) ordination date',
         'amharic': 'የቅዱስ እስጢፋኖስ ሰማዕት (ቀዳሚ ሰማዕትና ሊቀ ዲያቆናት)  የክህነት ዘመቻቸው መታሰቢያ',
       },
-      'recuringDate': 17,
       'major': true,
-      'negs': 2,
+      'negs': [2],
     },
-    'james_the_apostle_17': {
-      'key': 'james_the_apostle_17',
+    {
+      'id': 'james_the_apostle_17',
       'name': {
         'english': ' James the apostle',
         'amharic': ' ሐዋርያው ያዕቆብ ወልደ ዘብዲዮስ',
@@ -762,12 +690,11 @@ class OrthodoxSaints {
         'english': 'Commemoration of James the Apostle.',
         'amharic': 'የሐዋርያው ያዕቆብ ወልደ ዘብዲዮስ መታሰቢያ።',
       },
-      'recuringDate': 17,
       'major': true,
-      'negs': 8,
+      'negs': [8],
     },
-    'abba_gerima': {
-      'key': 'abba_gerima',
+    {
+      'id': 'abba_gerima',
       'name': {
         'english': 'Abba Gerima (one of the Nine saints)',
         'amharic': 'አባ ገሪማ',
@@ -776,12 +703,13 @@ class OrthodoxSaints {
         'english': 'Commemoration of  Abba Gerima (one of the Nine Saints).',
         'amharic': 'የአባ ገሪማ (ከዘጠኙ ቅዱሳን አንዱ) መታሰቢያ።',
       },
-      'recuringDate': 17,
       'major': true,
-      'negs': null,
+      'negs': [],
     },
-    'philip_the_apostle': {
-      'key': 'philip_the_apostle',
+  ],
+  '18': [
+    {
+      'id': 'philip_the_apostle',
       'name': {
         'english': 'Philip the Apostle /Abune Ewostatewos',
         'amharic': 'ሐዋርያው ፊሊጶስ ',
@@ -790,12 +718,11 @@ class OrthodoxSaints {
         'english': 'Commemoration of Philip the Apostle.',
         'amharic': 'የሐዋርያው ፊሊጶስ መታሰቢያ።',
       },
-      'recuringDate': 18,
       'major': true,
-      'negs': 3,
+      'negs': [3],
     },
-    'abune_ewostatewos': {
-      'key': 'abune_ewostatewos',
+    {
+      'id': 'abune_ewostatewos',
       'name': {
         'english': 'Abune_Ewostatewos',
         'amharic': 'አቡነ ኢዩስጣቲዮስ',
@@ -804,27 +731,11 @@ class OrthodoxSaints {
         'english': 'Commemoration of  Abune Ewostatewos.',
         'amharic': 'የአቡነ ኢዩስጣቲዮስ መታሰቢያ።',
       },
-      'recuringDate': 18,
       'major': true,
-      'negs': 1,
+      'negs': [1],
     },
-    'saint_georgis_scattering_of_his_bone': {
-      'key': 'saint_georgis_scattering_of_his_bone',
-      'name': {
-        'english': 'Saint Georgis',
-        'amharic': 'ቅዱስ ጊዮርጊስ',
-      },
-      'description': {
-        'english':
-            ' Feast of the Great Martyr Saint George, the scattering of his bone',
-        'amharic': 'ቅዱስ ጊዮርጊስ የአጥንቱ ፍልሰት መታሰቢያ',
-      },
-      'recuringDate': 24,
-      'major': false,
-      'negs': 5,
-    },
-    'james_the_apostle_18': {
-      'key': 'james_the_apostle_18',
+    {
+      'id': 'james_the_apostle_18',
       'name': {
         'english': ' James the apostle',
         'amharic': ' ሐዋርያው ያዕቆብ ወልደ ዘብዲዮስ',
@@ -833,58 +744,56 @@ class OrthodoxSaints {
         'english': 'Commemoration of James the Apostle.',
         'amharic': 'የሐዋርያው ያዕቆብ ወልደ ዘብዲዮስ መታሰቢያ።',
       },
-      'recuringDate': 18,
       'major': false,
-      'negs': 11,
+      'negs': [11],
     },
-    'gabriel_archangel_rescue_of_the_three_youths': {
-      'key': 'gabriel_archangel_rescue_of_the_three_youths',
+  ],
+  '19': [
+    {
+      'id': 'gabriel_archangel_rescue_of_the_three_youths',
       'name': {
         'english': 'Gabriel the Archangel',
         'amharic': 'ቅዱስ ገብርኤል',
       },
       'description': {
-        'english':
-            'Commemoration of Archangel Gabriel is dedicated to the rescue of the three youths (Sidraq, Misaq, and Abdenago).',
+        'english': 'Commemoration of Archangel Gabriel is dedicated to the rescue of the three youths (Sidraq, Misaq, and Abdenago).',
         'amharic': 'ሊቀ መላእክት ገብርኤል ሦስቱን ወጣቶች (ሲድራቅ፣ ሚሳቅና አብደናጎን) ማዳን መታሰቢያ',
       },
-      'recuringDate': 19,
       'major': true,
-      'negs': 4,
+      'negs': [4],
     },
-    'gabriel_archangel_rescue_of_rescue_of_quirqos_and_his_mother': {
-      'key': 'gabriel_archangel_rescue_of_rescue_of_quirqos_and_his_mother',
+    {
+      'id': 'gabriel_archangel_rescue_of_rescue_of_quirqos_and_his_mother',
       'name': {
         'english': 'Gabriel the Archangel',
         'amharic': 'ቅዱስ ገብርኤል',
       },
       'description': {
-        'english':
-            'Commemoration of Archangel Gabriel is dedicated to the rescue of rescue of Quirqos and his mother, Saint Iyeluta (Julitta). .',
+        'english': 'Commemoration of Archangel Gabriel is dedicated to the rescue of rescue of Quirqos and his mother, Saint Iyeluta (Julitta). .',
         'amharic': 'የእግዚአብሔር መልአክ ቅዱስ ገብርኤል ቂርቆስን እና እናቱን ቅድስት ኢየሉጣን ማዳን መታሰቢያ',
       },
-      'recuringDate': 19,
       'major': false,
-      'negs': 11,
+      'negs': [11],
     },
-    'hnstata_betkerestyan': {
-      'key': 'hnstata_betkerestyan',
+  ],
+  '20': [
+    {
+      'id': 'hnstata_betkerestyan',
       'name': {
         'english': 'Hnstata Betkerestyan',
         'amharic': 'ሕንፀተ ቤተ ክርስቲያን',
       },
       'description': {
-        'english':
-            'Commemoration of the building of the church in the name of Our Holy Virgin Mary.',
-        'amharic':
-            'ሄነሳተ ቤተ ክርስቲያን - ለቅድስት ድንግል ማርያም የተሰጠች የመጀመሪያዋ ቤተ ክርስቲያን በፊልጵስዩስ መመሥረት',
+        'english': 'Commemoration of the building of the church in the name of Our Holy Virgin Mary.',
+        'amharic': 'ሄነሳተ ቤተ ክርስቲያን - ለቅድስት ድንግል ማርያም የተሰጠች የመጀመሪያዋ ቤተ ክርስቲያን በፊልጵስዩስ መመሥረት',
       },
-      'recuringDate': 20,
       'major': true,
-      'negs': 10,
+      'negs': [10],
     },
-    'egzeet_na_maryam_departure': {
-      'key': 'egzeet_na_maryam_departure',
+  ],
+  '21': [
+    {
+      'id': 'egzeet_na_maryam_departure',
       'name': {
         'english': 'Egze\'et-na Maryam',
         'amharic': 'ቅድስት ድንግል ማርያም',
@@ -893,27 +802,24 @@ class OrthodoxSaints {
         'english': 'The departure of Our Holy Mother.',
         'amharic': 'የቅድስት ድንግል ማርያም ዕርገት',
       },
-      'recuringDate': 21,
       'major': false,
-      'negs': 5,
+      'negs': [5],
     },
-    'egzeet_na_maryam_debre_mitmak': {
-      'key': 'egzeet_na_maryam_debre_mitmak',
+    {
+      'id': 'egzeet_na_maryam_debre_mitmak',
       'name': {
         'english': 'Egze\'et-na Maryam',
         'amharic': 'ቅድስት ድንግል ማርያም',
       },
       'description': {
-        'english':
-            'The appearance of Our Holy Mother Virgin Mariam in the church of Debre Mitmak',
+        'english': 'The appearance of Our Holy Mother Virgin Mariam in the church of Debre Mitmak',
         'amharic': 'የቅድስት ድንግል ማርያም በደብረ ምጥማቅ ቤተ ክርስቲያን መገለጥ።',
       },
-      'recuringDate': 21,
       'major': false,
-      'negs': 9,
+      'negs': [9],
     },
-    'egzeet_na_maryam_prayed_at_golgota': {
-      'key': 'egzeet_na_maryam_prayed_at_golgota',
+    {
+      'id': 'egzeet_na_maryam_prayed_at_golgota',
       'name': {
         'english': 'Egze\'et-na Maryam',
         'amharic': 'ቅድስት ድንግል ማርያም',
@@ -922,12 +828,13 @@ class OrthodoxSaints {
         'english': 'Sene Golgota - Our Holy Mother Virgin Mariam prayed at Golgota',
         'amharic': 'ሰኔ ጎልጎታ - ቅድስት ድንግል ማርያም በጎልጎታ ጸለየች',
       },
-      'recuringDate': 21,
       'major': false,
-      'negs': 10,
+      'negs': [10],
     },
-    'archangel_uriel': {
-      'key': 'archangel_uriel',
+  ],
+  '22': [
+    {
+      'id': 'archangel_uriel',
       'name': {
         'english': 'Archangel Uriel',
         'amharic': 'ቅዱስ ኡራኤል',
@@ -936,12 +843,11 @@ class OrthodoxSaints {
         'english': 'Archangel Uriel received covenant and ordained as an Archangel',
         'amharic': 'ሊቀ መላእክት ዑራኤል ቃል ኪዳን ተቀብሎ ሊቀ መልአክ ሆኖ ተሾመ።',
       },
-      'recuringDate': 22,
       'major': false,
-      'negs': 11,
+      'negs': [11],
     },
-    'saint_lukas': {
-      'key': 'saint_lukas',
+    {
+      'id': 'saint_lukas',
       'name': {
         'english': 'Saint Lukas',
         'amharic': 'ቅዱስ ሉቃስ',
@@ -950,12 +856,11 @@ class OrthodoxSaints {
         'english': 'Saint Mark departed from this world',
         'amharic': 'ቅዱስ ማርቆስ ከዚህ ዓለም በሞት ተለየ',
       },
-      'recuringDate': 22,
       'major': true,
-      'negs': 2,
+      'negs': [2],
     },
-    'saint_daqsyos': {
-      'key': 'saint_daqsyos',
+    {
+      'id': 'saint_daqsyos',
       'name': {
         'english': 'Saint Daqsyos',
         'amharic': 'ቅዱስ ደቅስዮስ',
@@ -964,12 +869,11 @@ class OrthodoxSaints {
         'english': 'Saint_Daqsyos',
         'amharic': 'ቅዱስ ደቅስዮስ',
       },
-      'recuringDate': 22,
       'major': true,
-      'negs': 4,
+      'negs': [4],
     },
-    'bisrate_gebriel': {
-      'key': 'bisrate_gebriel',
+    {
+      'id': 'bisrate_gebriel',
       'name': {
         'english': 'bisrate gebriel ',
         'amharic': 'ብስራተ ገብርኤል',
@@ -978,12 +882,13 @@ class OrthodoxSaints {
         'english': 'Commemoration of the Annunciation',
         'amharic': 'ብስራተ ገብርኤል',
       },
-      'recuringDate': 22,
       'major': true,
-      'negs': 4,
+      'negs': [4],
     },
-    'saint_georgis_of_Lydda': {
-      'key': 'saint_georgis_of_Lydda',
+  ],
+  '23': [
+    {
+      'id': 'saint_georgis_of_Lydda',
       'name': {
         'english': 'Saint Georgis - George of Lydda',
         'amharic': 'ቅዱስ ጊዮርጊስ',
@@ -992,12 +897,11 @@ class OrthodoxSaints {
         'english': ' Saint Georgis - George of Lydda',
         'amharic': 'ቅዱስ ጊዮርጊስ ',
       },
-      'recuringDate': 23,
       'major': false,
-      'negs': 8,
+      'negs': [8],
     },
-    'saint_georgis_the_battle_of_adwa': {
-      'key': 'saint_georgis_the_battle_of_adwa',
+    {
+      'id': 'saint_georgis_the_battle_of_adwa',
       'name': {
         'english': 'Saint Giorgis (George)-The Battle of Adwa',
         'amharic': 'ቅዱስ ጊዮርጊስ - የአድዋ ጦርነት',
@@ -1006,52 +910,65 @@ class OrthodoxSaints {
         'english': 'Saint Giorgis (George)-The Battle of Adwa',
         'amharic': 'ቅዱስ ጊዮርጊስ - የአድዋ ጦርነት',
       },
-      'recuringDate': 23,
       'major': true,
-      'negs': 6,
+      'negs': [6],
     },
-    'takla_haymanot': {
+  ],
+  '24': [
+    {
+      'id': 'saint_georgis_scattering_of_his_bone',
+      'name': {
+        'english': 'Saint Georgis',
+        'amharic': 'ቅዱስ ጊዮርጊስ',
+      },
+      'description': {
+        'english': ' Feast of the Great Martyr Saint George, the scattering of his bone',
+        'amharic': 'ቅዱስ ጊዮርጊስ የአጥንቱ ፍልሰት መታሰቢያ',
+      },
+      'major': false,
+      'negs': [5],
+    },
+    {
+      'id': 'takla_haymanot_diparted_from_this_world',
       'name': {
         'english': 'Abuna Takla Haymanot',
         'amharic': 'አቡነ ተክለ ሐይማኖት',
       },
-      'recuringDate': 24,
-      'defaultDescription': {
-        'english': 'Commemoration of Abuna Takla Haymanot.',
-        'amharic': 'የአቡነ ተክለ ሐይማኖት መታሰቢያ።',
+      'description': {
+        'english': 'Abuna Takla Haymanot departed from this world',
+        'amharic': 'አቡነ ተክለ ሃይማኖት ከዚህ ዓለም በሞት ተለዩ',
       },
-      'events': [
-        {
-          'key': 'takla_haymanot_diparted_from_this_world',
-          'description': {
-            'english': 'Abuna Takla Haymanot departed from this world',
-            'amharic': 'አቡነ ተክለ ሃይማኖት ከዚህ ዓለም በሞት ተለዩ',
-          },
-          'major': true,
-          'negs': 12,
-        },
-        {
-          'key': 'takla_haymanot_legs_broke',
-          'description': {
-            'english': 'Having stood for 7 years, one of his legs broke',
-            'amharic': 'ለሰባት ዓመታት ከቆሙ በኋላ አንደኛው እግራቸው ተሰበረ።',
-          },
-          'major': true,
-          'negs': 5,
-        },
-        {
-          'key': 'takla_haymanot_birth_date',
-          'description': {
-            'english': 'Abuna Takla Haymanot\'s birth date',
-            'amharic': 'የአቡነ ተክለ ሃይማኖት የልደት ቀን',
-          },
-          'major': false,
-          'negs': 4,
-        },
-      ],
+      'major': true,
+      'negs': [12],
     },
-    'saint_kirstos_semera': {
-      'key': 'saint_kirstos_semera',
+    {
+      'id': 'takla_haymanot_legs_broke',
+      'name': {
+        'english': 'Abuna Takla Haymanot',
+        'amharic': 'አቡነ ተክለ ሐይማኖት',
+      },
+      'description': {
+        'english': 'Having stood for 7 years, one of his legs broke',
+        'amharic': 'ለሰባት ዓመታት ከቆሙ በኋላ አንደኛው እግራቸው ተሰበረ።',
+      },
+      'major': true,
+      'negs': [5],
+    },
+    {
+      'id': 'takla_haymanot_birth_date',
+      'name': {
+        'english': 'Abuna Takla Haymanot',
+        'amharic': 'አቡነ ተክለ ሐይማኖት',
+      },
+      'description': {
+        'english': 'Abuna Takla Haymanot\'s birth date',
+        'amharic': 'የአቡነ ተክለ ሃይማኖት የልደት ቀን',
+      },
+      'major': false,
+      'negs': [4],
+    },
+    {
+      'id': 'saint_kirstos_semera',
       'name': {
         'english': 'Saint Kirstos Semera',
         'amharic': 'ቅድስት ክርስረቶስ ሰምራ ',
@@ -1060,12 +977,11 @@ class OrthodoxSaints {
         'english': 'Saint Kirstos Semera',
         'amharic': 'ቅድስት ክርስረቶስ ሰምራ ',
       },
-      'recuringDate': 24,
       'major': true,
-      'negs': 12,
+      'negs': [12],
     },
-    'heavenly_priests': {
-      'key': '24_heavenly_priests',
+    {
+      'id': '24_heavenly_priests',
       'name': {
         'english': '24 Heavenly Priests',
         'amharic': '24ቱ ካህናተ ሰማይ',
@@ -1074,26 +990,13 @@ class OrthodoxSaints {
         'english': '24 Heavenly Priests',
         'amharic': '24ቱ ካህናተ ሰማይ',
       },
-      'recuringDate': 24,
       'major': true,
-      'negs': 3,
+      'negs': [3],
     },
-    'saint_marqorewos': {
-      'key': 'saint_marqorewos',
-      'name': {
-        'english': 'Saint Marqorewos (Merkorios)/ Abune Habibe',
-        'amharic': 'ቅዱስ መርቆሬዎስ ፣አቡነ ሀቢብ (አባ ቡላ)',
-      },
-      'description': {
-        'english': 'Saint Joseph',
-        'amharic': 'አረጋዊው ዮሴፍ ',
-      },
-      'recuringDate': 27,
-      'major': true,
-      'negs': 3,
-    },
-    'abune_habibe': {
-      'key': 'abune_habibe',
+  ],
+  '25': [
+    {
+      'id': 'abune_habibe',
       'name': {
         'english': 'Abune Habibe',
         'amharic': 'አቡነ ሀቢብ (አባ ቡላ)',
@@ -1102,12 +1005,11 @@ class OrthodoxSaints {
         'english': 'Abune_Habibe',
         'amharic': 'አረጋዊው ዮሴፍ ',
       },
-      'recuringDate': 25,
       'major': true,
-      'negs': 2,
+      'negs': [2],
     },
-    'saint_jude_son_of_alpheus': {
-      'key': 'saint_jude_son_of_alpheus',
+    {
+      'id': 'saint_jude_son_of_alpheus',
       'name': {
         'english': 'Saint Jude, son of Alpheus, the Apostle',
         'amharic': 'ቅዱስ ይሁዳ ዘአልፍዮስ ሐዋርያው',
@@ -1116,12 +1018,13 @@ class OrthodoxSaints {
         'english': 'Saint Jude, son of Alpheus, the Apostle his martyrdom',
         'amharic': 'ቅዱስ ይሁዳ ዘአልፍዮስ ሐዋርያውሰማዕትነቱ',
       },
-      'recuringDate': 25,
       'major': false,
-      'negs': 10,
+      'negs': [10],
     },
-    'saint_joseph': {
-      'key': 'saint_joseph',
+  ],
+  '26': [
+    {
+      'id': 'saint_joseph',
       'name': {
         'english': 'Saint Joseph ',
         'amharic': 'አረጋዊው ዮሴፍ',
@@ -1130,12 +1033,11 @@ class OrthodoxSaints {
         'english': 'Saint Joseph',
         'amharic': 'አረጋዊው ዮሴፍ ',
       },
-      'recuringDate': 26,
       'major': true,
-      'negs': 11,
+      'negs': [11],
     },
-    'abba_salama_frumentius': {
-      'key': 'abba_salama_frumentius',
+    {
+      'id': 'abba_salama_frumentius',
       'name': {
         'english': ' Abba_Salama_Frumentius, the Enlightener of Ethiopia',
         'amharic': 'አባ ሰላማ ከሳቴ ብርሀን',
@@ -1144,12 +1046,11 @@ class OrthodoxSaints {
         'english': 'Abba_Salama_Frumentius, the Enlightener of Ethiopia',
         'amharic': 'አባ ሰላማ ከሳቴ ብርሀን ',
       },
-      'recuringDate': 26,
       'major': true,
-      'negs': 11,
+      'negs': [11],
     },
-    'thomas_the_apostle': {
-      'key': 'thomas_the_apostle',
+    {
+      'id': 'thomas_the_apostle',
       'name': {
         'english': 'Thomas the apostle',
         'amharic': ' ቶማስ ዘህንደኬ',
@@ -1158,12 +1059,11 @@ class OrthodoxSaints {
         'english': 'Thomas the apostle',
         'amharic': 'ቶማስ ዘህንደኬ ',
       },
-      'recuringDate': 26,
       'major': true,
-      'negs': 9,
+      'negs': [9],
     },
-    'abune_habte_mariam': {
-      'key': 'abune_habte_mariam',
+    {
+      'id': 'abune_habte_mariam',
       'name': {
         'english': 'Abune Habte Mariam',
         'amharic': 'አቡነ ሀብተ ማርያም',
@@ -1172,12 +1072,11 @@ class OrthodoxSaints {
         'english': 'Abune Habte Mariam',
         'amharic': 'አቡነ ሀብተ ማርያም',
       },
-      'recuringDate': 26,
       'major': true,
-      'negs': 3,
+      'negs': [3],
     },
-    'aba_eyesus_moea': {
-      'key': 'aba_eyesus_moea',
+    {
+      'id': 'aba_eyesus_moea',
       'name': {
         'english': 'Aba Eyesus Moe`a',
         'amharic': 'አባ ኢየሱስ ሞአ',
@@ -1186,12 +1085,26 @@ class OrthodoxSaints {
         'english': 'Saint Eyesus Moe`a',
         'amharic': 'አባ ኢየሱስ ሞአ ',
       },
-      'recuringDate': 26,
       'major': true,
-      'negs': null,
+      'negs': [],
     },
-    'medhane_alem': {
-      'key': 'medhane_alem',
+  ],
+  '27': [
+    {
+      'id': 'saint_marqorewos',
+      'name': {
+        'english': 'Saint Marqorewos (Merkorios)/ Abune Habibe',
+        'amharic': 'ቅዱስ መርቆሬዎስ ፣አቡነ ሀቢብ (አባ ቡላ)',
+      },
+      'description': {
+        'english': 'Saint Joseph',
+        'amharic': 'አረጋዊው ዮሴፍ ',
+      },
+      'major': true,
+      'negs': [3],
+    },
+    {
+      'id': 'medhane_alem',
       'name': {
         'english': 'Medhane Alem -The Saviour of the world/ Abune Mebea Zion',
         'amharic': 'መድሐኔአለም ',
@@ -1200,12 +1113,11 @@ class OrthodoxSaints {
         'english': 'Medhane Alem -The Saviour of the world',
         'amharic': 'የዓለም መድኃኒት',
       },
-      'recuringDate': 27,
       'major': true,
-      'negs': 7,
+      'negs': [7],
     },
-    'abune_mebea_zion': {
-      'key': 'abune_mebea_zion',
+    {
+      'id': 'abune_mebea_zion',
       'name': {
         'english': ' Abune Mebea Zion',
         'amharic': 'አቡነ መባዓ ፅዮን',
@@ -1214,11 +1126,13 @@ class OrthodoxSaints {
         'english': 'Abune Mebea Zion',
         'amharic': 'አቡነ መባዓ ፅዮን',
       },
-      'recuringDate': 27,
-      'negs': 2,
+      'major': false,
+      'negs': [2],
     },
-    'ammanuel': {
-      'key': 'ammanuel',
+  ],
+  '28': [
+    {
+      'id': 'ammanuel',
       'name': {
         'english': 'ammanuel',
         'amharic': 'አማኑኤል',
@@ -1227,12 +1141,13 @@ class OrthodoxSaints {
         'english': 'ammanuel',
         'amharic': 'አማኑኤል',
       },
-      'recuringDate': 28,
       'major': true,
       'negs': [2, 5, 9],
     },
-    'baale_wold': {
-      'key': 'baale_wold',
+  ],
+  '29': [
+    {
+      'id': 'baale_wold',
       'name': {
         'english': 'Ba`ale Wold',
         'amharic': 'በዓለወልድ',
@@ -1241,12 +1156,11 @@ class OrthodoxSaints {
         'english': 'Ba`ale Wold (Feast of God The Son)',
         'amharic': 'ዮሐንስ መጥምቅ',
       },
-      'recuringDate': 29,
       'major': true,
       'negs': [4, 5],
     },
-    'saint_lalibela': {
-      'key': 'saint_lalibela',
+    {
+      'id': 'saint_lalibela',
       'name': {
         'english': 'Saint Lalibela',
         'amharic': 'ቅዱስ ላሊበላ',
@@ -1255,12 +1169,11 @@ class OrthodoxSaints {
         'english': 'Saint Lalibela',
         'amharic': 'ቅዱስ ላሊበላ',
       },
-      'recuringDate': 29,
       'major': true,
-      'negs': 4,
+      'negs': [4],
     },
-    'saint_arsema_Beheading': {
-      'key': 'saint_arsema_29',
+    {
+      'id': 'saint_arsema_29',
       'name': {
         'english': 'Saint Arsema',
         'amharic': 'አርሴማ',
@@ -1269,12 +1182,13 @@ class OrthodoxSaints {
         'english': 'Commemoration of The Martyrdom (Beheading) of Kidist Arsema',
         'amharic': 'የቅድስት አርሴማ ሰማዕትነት (ራስ መቁረጥ)',
       },
-      'recuringDate': 29,
       'major': false,
-      'negs': 1,
+      'negs': [1],
     },
-    'john_baptist': {
-      'key': 'john_baptist',
+  ],
+  '30': [
+    {
+      'id': 'john_baptist',
       'name': {
         'english': 'John the baptist',
         'amharic': 'ዮሐንስ መጥምቅ ',
@@ -1283,12 +1197,11 @@ class OrthodoxSaints {
         'english': 'John the baptist',
         'amharic': 'ዮሐንስ መጥምቅ',
       },
-      'recuringDate': 30,
       'major': true,
-      'negs': 10,
+      'negs': [10],
     },
-    'saint_markos': {
-      'key': 'saint_markos',
+    {
+      'id': 'saint_markos',
       'name': {
         'english': 'Saint_Markos',
         'amharic': 'ቅዱስ ማርቆስ',
@@ -1297,96 +1210,79 @@ class OrthodoxSaints {
         'english': 'Saint Markos /St. Mark the Evangelist/',
         'amharic': 'የቅዱስ ማርቆስ የልደት',
       },
-      'recuringDate': 30,
       'major': true,
       'negs': [2, 8],
     },
-  };
+  ],
+};
 
-  /// Get saints for a specific day of the month
-  /// Returns list of saints with their celebration type (yearly/monthly)
+/// Orthodox monthly saints data, sourced from nigs.json (day-keyed, flat
+/// entries). Exposed for callers that want the raw data shape.
+class OrthodoxSaints {
+  /// Raw day-keyed saints data ("1".."30" -> list of saint entries).
+  static const Map<String, List<Map<String, dynamic>>> daysById =
+      _orthodoxDaysById;
+
+  /// Get saints commemorated on a specific day-of-month, filtered/tagged for
+  /// a given Ethiopian [month].
+  ///
+  /// Mirrors kenat's `MonthGrid._getSaintsMap` logic: a saint is included if
+  /// [showAllSaints] is true OR [month] appears in the saint's `negs` list
+  /// (i.e. it's a yearly major feast in that month). When included, the
+  /// entry is tagged `isNigs: true` if it matched via `negs`, `false` if it
+  /// was only included because [showAllSaints] was set.
+  ///
+  /// [day] - Day of month (1-30).
+  /// [month] - Ethiopian month (1-13), used to determine yearly (`negs`)
+  ///   matches.
+  /// [lang] - Language for name/description ('amharic' or 'english').
+  /// [showAllSaints] - If true, include every saint recurring on [day]
+  ///   regardless of whether [month] is one of their `negs` months.
   static List<Map<String, dynamic>> getSaintsForDay(
     int day,
     int month, [
-    String? lang,
+    String lang = 'amharic',
+    bool showAllSaints = false,
   ]) {
-    lang ??= 'amharic';
-    final saints = <Map<String, dynamic>>[];
+    final entries = _orthodoxDaysById[day.toString()];
+    if (entries == null || entries.isEmpty) return [];
 
-    for (final entry in orthodoxMonthlydays.entries) {
-      final saintData = entry.value as Map<String, dynamic>;
-      final recuringDate = saintData['recuringDate'] as int?;
+    final result = <Map<String, dynamic>>[];
+    for (final entry in entries) {
+      final negs = (entry['negs'] as List).cast<int>();
+      final isNigs = negs.contains(month);
+      if (!isNigs && !showAllSaints) continue;
 
-      if (recuringDate == null || recuringDate != day) continue;
+      final name = entry['name'] as Map<String, dynamic>;
+      final description = entry['description'] as Map<String, dynamic>;
 
-      // Handle saints with multiple events (like thaddeus_the_apostle, takla_haymanot)
-      if (saintData.containsKey('events')) {
-        final events = saintData['events'] as List<dynamic>;
-        for (final event in events) {
-          final eventData = event as Map<String, dynamic>;
-          final negs = eventData['negs'];
-          final isYearly = _isYearlyCelebration(negs, month);
-          final eventKey = eventData['key'] as String;
-          final description = eventData['description'] as Map<String, dynamic>;
-
-          saints.add({
-            'key': eventKey,
-            'name': (saintData['name'] as Map<String, dynamic>)[lang] ??
-                (saintData['name'] as Map<String, dynamic>)['amharic'],
-            'description': description[lang] ?? description['amharic'],
-            'major': eventData['major'] as bool? ?? false,
-            'type': isYearly ? 'yearly' : 'monthly',
-            'celebration': isYearly ? 'yearly' : 'monthly',
-          });
-        }
-      } else {
-        // Regular saint with single entry
-        final negs = saintData['negs'];
-        final isYearly = _isYearlyCelebration(negs, month);
-        final key = saintData['key'] as String? ?? entry.key;
-        final name = saintData['name'] as Map<String, dynamic>;
-        final description = saintData['description'] as Map<String, dynamic>;
-
-        saints.add({
-          'key': key,
-          'name': name[lang] ?? name['amharic'],
-          'description': description[lang] ?? description['amharic'],
-          'major': saintData['major'] as bool? ?? false,
-          'type': isYearly ? 'yearly' : 'monthly',
-          'celebration': isYearly ? 'yearly' : 'monthly',
-        });
-      }
+      result.add({
+        'key': entry['id'],
+        'name': name[lang] ?? name['english'],
+        'description': description[lang] ?? description['english'],
+        'major': entry['major'] as bool? ?? false,
+        'isNigs': isNigs,
+        'tags': [HolidayTags.religious, HolidayTags.christian, isNigs ? 'NIGS' : 'SAINT_DAY'],
+      });
     }
-
-    return saints;
+    return result;
   }
 
-  /// Check if a saint celebration is yearly based on negs and current month
-  static bool _isYearlyCelebration(dynamic negs, int month) {
-    if (negs == null) return false; // Monthly only
-
-    if (negs is int) {
-      return negs == month; // Yearly in this specific month
-    }
-
-    if (negs is List) {
-      return negs.contains(month); // Yearly in any of these months
-    }
-
-    return false;
-  }
-
-  /// Get all saints for a month
+  /// Get all saints for an Ethiopian [month], keyed by day-of-month.
+  ///
+  /// [month] - Ethiopian month (1-13).
+  /// [lang] - Language for name/description ('amharic' or 'english').
+  /// [showAllSaints] - If true, include every recurring saint for every day,
+  ///   not just the ones whose `negs` list includes [month].
   static Map<int, List<Map<String, dynamic>>> getSaintsForMonth(
     int month, [
-    String? lang,
+    String lang = 'amharic',
+    bool showAllSaints = false,
   ]) {
-    lang ??= 'amharic';
     final saintsMap = <int, List<Map<String, dynamic>>>{};
 
-    // Check all days 1-30
     for (int day = 1; day <= 30; day++) {
-      final daySaints = getSaintsForDay(day, month, lang);
+      final daySaints = getSaintsForDay(day, month, lang, showAllSaints);
       if (daySaints.isNotEmpty) {
         saintsMap[day] = daySaints;
       }

@@ -37,7 +37,7 @@ class MonthGrid {
 
     year = config['year'] ?? currentEthiopian['year']!;
     month = config['month'] ?? currentEthiopian['month']!;
-    weekStart = config['weekStart'] ?? 0;
+    weekStart = config['weekStart'] ?? 1;
     useGeez = config['useGeez'] ?? false;
     weekdayLang = config['weekdayLang'] ?? 'amharic';
     holidayFilter = config['holidayFilter'];
@@ -74,9 +74,9 @@ class MonthGrid {
     if (weekdayLang != null) {
       if (weekdayLang is! String ||
           !['amharic', 'english'].contains(weekdayLang)) {
-        // Instead of throwing, default to 'amharic' to be more forgiving and
-        // match expected JS behavior in tests that pass an invalid weekdayLang.
-        config['weekdayLang'] = 'amharic';
+        throw InvalidGridConfigError(
+          'Invalid weekdayLang: "$weekdayLang". Must be one of [amharic, english].',
+        );
       }
     }
   }
@@ -142,7 +142,7 @@ class MonthGrid {
   /// Gets saints map for the month
   Map<int, List<Map<String, dynamic>>> _getSaintsMap() {
     if (mode != 'christian' && mode != 'orthodox') return {};
-    return OrthodoxSaints.getSaintsForMonth(month, weekdayLang);
+    return OrthodoxSaints.getSaintsForMonth(month, weekdayLang, showAllSaints);
   }
 
   /// Merges days with holidays and saints
