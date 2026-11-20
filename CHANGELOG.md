@@ -1,3 +1,7 @@
+## 2.0.2
+
+* Docs: new README banner.
+
 ## 2.0.1
 
 * Fixed `toGC` (and the Ethiopian New Year helpers) being off by a day for Ethiopian years outside 1892-2091. The Ethiopian leap cycle has no century exception, so Meskerem 1 is now counted from a fixed anchor instead of the Gregorian leap rule. `getEthiopianNewYearForGregorian` also no longer returns Sept 11 when the date is Sept 12 (e.g. 2023).

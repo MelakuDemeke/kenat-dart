@@ -1,6 +1,6 @@
 name: kenat
 description: "A comprehensive Ethiopian calendar library for Dart. Includes date conversions, holidays, fasting, Bahire Hasab, and Geez."
-version: 2.0.1
+version: 2.0.2
 homepage: https://kenat.et
 documentation: https://kenat.et/doc
 repository: https://github.com/MelakuDemeke/kenat-dart
