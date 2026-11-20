@@ -1,5 +1,7 @@
 # Kenat — Ethiopian Calendar for Dart 🗓️
 
+![Kenat / ቀናት — Ethiopian calendar library for Dart & Flutter](assets/img/kenat-dart-banner.png)
+
 [![pub package](https://img.shields.io/pub/v/kenat.svg)](https://pub.dev/packages/kenat)
 [![Dart](https://img.shields.io/badge/Dart-%3E%3D3.0.0-blue)](https://dart.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
