@@ -237,9 +237,20 @@ class EthiopianCalendarUtils {
     ValidationHelpers.validateNumericInputs('getEthiopianNewYearForGregorian', {
       'gYear': gYear,
     });
-    final prevGYear = gYear - 1;
-    final newYearDay = LeapYearUtils.isGregorianLeapYear(prevGYear) ? 12 : 11;
-    return {'gregorianYear': gYear, 'month': 9, 'day': newYearDay};
+    // Meskerem 1 in September of gYear belongs to Ethiopian year gYear - 7.
+    final newYear = _meskerem1(gYear - 7);
+    return {'gregorianYear': gYear, 'month': 9, 'day': newYear.day};
+  }
+
+  /// Gregorian date (UTC) of Meskerem 1 of [ethiopianYear].
+  ///
+  /// The Ethiopian leap cycle has no century exception (year Y is leap when
+  /// Y % 4 == 3), so count days from Meskerem 1, 1964 = 1971-09-12.
+  static DateTime _meskerem1(int ethiopianYear) {
+    final days = 365 * (ethiopianYear - 1964) +
+        (ethiopianYear / 4).floor() -
+        (1964 / 4).floor();
+    return DateTime.utc(1971, 9, 12 + days);
   }
 
   /// Returns the Gregorian date of the Ethiopian New Year for the given Ethiopian year.
@@ -254,11 +265,12 @@ class EthiopianCalendarUtils {
       'getGregorianDateOfEthiopianNewYear',
       {'ethiopianYear': ethiopianYear},
     );
-    final gregorianYear = ethiopianYear + 7;
-    final newYearDay = LeapYearUtils.isGregorianLeapYear(gregorianYear + 1)
-        ? 12
-        : 11;
-    return {'gregorianYear': gregorianYear, 'month': 9, 'day': newYearDay};
+    final newYear = _meskerem1(ethiopianYear);
+    return {
+      'gregorianYear': newYear.year,
+      'month': newYear.month,
+      'day': newYear.day,
+    };
   }
 }
 

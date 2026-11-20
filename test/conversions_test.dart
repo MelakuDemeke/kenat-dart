@@ -104,6 +104,26 @@ void main() {
         expect(result, equals({'year': 2022, 'month': 9, 'day': 11}));
       },
     );
+
+    test('Ethiopian to Gregorian: Battle of Adwa (1888-6-23) -> March 1, 1896',
+        () {
+      final result = toGC(1888, 6, 23);
+      expect(result, equals({'year': 1896, 'month': 3, 'day': 1}));
+    });
+
+    test('Ethiopian to Gregorian: around Gregorian 2100 (no century exception)',
+        () {
+      expect(toGC(2091, 13, 6), equals({'year': 2099, 'month': 9, 'day': 11}));
+      expect(toGC(2092, 1, 1), equals({'year': 2099, 'month': 9, 'day': 12}));
+      expect(toGC(2093, 1, 1), equals({'year': 2100, 'month': 9, 'day': 12}));
+    });
+
+    test('Ethiopian to Gregorian: New Year in the 1800s/1900 boundary', () {
+      expect(toGC(1888, 1, 1), equals({'year': 1895, 'month': 9, 'day': 11}));
+      expect(toGC(1876, 1, 1), equals({'year': 1883, 'month': 9, 'day': 11}));
+      expect(toGC(1892, 1, 1), equals({'year': 1899, 'month': 9, 'day': 11}));
+      expect(toGC(1893, 1, 1), equals({'year': 1900, 'month': 9, 'day': 11}));
+    });
   });
 
   group('Gregorian to Ethiopian conversion', () {
@@ -262,6 +282,22 @@ void main() {
       expect(backToGreg['year'], equals(gregYear));
       expect(backToGreg['month'], equals(gregMonth));
       expect(backToGreg['day'], equals(gregDay));
+    });
+
+    test('Round-trip toGC(toEC(d)) == d for every day 1900-01-01..2100-12-31',
+        () {
+      var d = DateTime.utc(1900, 1, 1);
+      final end = DateTime.utc(2100, 12, 31);
+      while (!d.isAfter(end)) {
+        final eth = toEC(d.year, d.month, d.day);
+        final back = toGC(eth['year']!, eth['month']!, eth['day']!);
+        expect(
+          back,
+          equals({'year': d.year, 'month': d.month, 'day': d.day}),
+          reason: 'round trip failed for $d (EC $eth)',
+        );
+        d = DateTime.utc(d.year, d.month, d.day + 1);
+      }
     });
   });
 

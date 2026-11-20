@@ -142,4 +142,34 @@ void main() {
       expect(getEthiopianDaysInMonth(2020, 13), 5);
     });
   });
+
+  group('Ethiopian New Year helpers', () {
+    test('getGregorianDateOfEthiopianNewYear follows the Ethiopian leap cycle',
+        () {
+      expect(getGregorianDateOfEthiopianNewYear(2016),
+          {'gregorianYear': 2023, 'month': 9, 'day': 12});
+      expect(getGregorianDateOfEthiopianNewYear(2017),
+          {'gregorianYear': 2024, 'month': 9, 'day': 11});
+      expect(getGregorianDateOfEthiopianNewYear(1888),
+          {'gregorianYear': 1895, 'month': 9, 'day': 11});
+      expect(getGregorianDateOfEthiopianNewYear(1892),
+          {'gregorianYear': 1899, 'month': 9, 'day': 11});
+      expect(getGregorianDateOfEthiopianNewYear(2092),
+          {'gregorianYear': 2099, 'month': 9, 'day': 12});
+      expect(getGregorianDateOfEthiopianNewYear(2093),
+          {'gregorianYear': 2100, 'month': 9, 'day': 12});
+    });
+
+    test('getEthiopianNewYearForGregorian returns Meskerem 1 of year G - 7',
+        () {
+      expect(getEthiopianNewYearForGregorian(2023),
+          {'gregorianYear': 2023, 'month': 9, 'day': 12});
+      expect(getEthiopianNewYearForGregorian(2024),
+          {'gregorianYear': 2024, 'month': 9, 'day': 11});
+      expect(getEthiopianNewYearForGregorian(1895),
+          {'gregorianYear': 1895, 'month': 9, 'day': 11});
+      expect(getEthiopianNewYearForGregorian(2100),
+          {'gregorianYear': 2100, 'month': 9, 'day': 12});
+    });
+  });
 }
